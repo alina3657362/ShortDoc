@@ -1,5 +1,7 @@
 export enum AppRoute {
     Upload = '/',
-    Document = '/document/:id',
+    Document = '/documents/:id',
+    Account = '/:nickname',
+    Login = '/login',
 }
 

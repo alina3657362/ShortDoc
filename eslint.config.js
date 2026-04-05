@@ -17,11 +17,11 @@ export default tseslint.config(
         sourceType: 'module',
         parser: tseslint.parser,
         parserOptions: {
-          project: './tsconfig.json',        // или ['./tsconfig.app.json'] если несколько
+          project: './tsconfig.eslint.json',
           tsconfigRootDir: import.meta.dirname,
         },
         globals: {
-          ...globalThis.browser,            // браузерные глобальные переменные
+          ...globalThis.browser,
         },
       },
       settings: {
@@ -37,8 +37,8 @@ export default tseslint.config(
       rules: {
         // React
         ...react.configs.recommended.rules,
-        'react/react-in-jsx-scope': 'off',        // не нужно с React 17+
-        'react/prop-types': 'off',                // не нужны при использовании TypeScript
+        'react/react-in-jsx-scope': 'off',
+        'react/prop-types': 'off',
 
         // React Hooks
         ...reactHooks.configs.recommended.rules,
