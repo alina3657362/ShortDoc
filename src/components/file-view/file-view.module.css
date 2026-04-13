@@ -1,0 +1,143 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.file_block {
+  display: flex;
+  background: #F7F7F7;
+  align-items: center;
+  border-radius: 12px;
+  height: 76px;
+  padding: 32px 40px 32px 26px;
+  box-sizing: border-box;
+}
+
+.file_block.error {
+  border: 1px solid #EB5757;
+}
+
+.file_name {
+  flex-grow: 1;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.delete_button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.error_message {
+  color: #EB5757;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 12px;
+}
+
+.upload_button {
+  background: #6C9EFF;
+  border-radius: 12px;
+  color: white;
+  border: none;
+  box-shadow: none;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  height: 37px;
+  margin-top: 26px;
+}
+
+.upload_button.error {
+  margin-top: 10px;
+}
+
+.upload_button:disabled {
+  background: rgba(108, 158, 255, 0.7);
+}
+
+.personal_container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  position: relative;
+}
+
+.personal_input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+.personal_label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  user-select: none;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.personal_label::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #CED9DC;
+  border-radius: 2px;
+  background: white;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.personal_input:hover + .personal_label::before {
+  border-color: #6C9EFF;
+}
+
+.personal_input:checked + .personal_label::before {
+  background: #6C9EFF;
+  border-color: #6C9EFF;
+}
+
+.personal_input:checked + .personal_label::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.personal_link {
+  color: #6C9EFF;
+}
+
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

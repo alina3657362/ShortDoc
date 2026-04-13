@@ -1,0 +1,13 @@
+.container {
+  display: flex;
+  padding: 26px 32px;
+}
+
+.logo {
+  flex-grow: 1;
+}
+
+.icons {
+  display: flex;
+  gap: 20px;
+}

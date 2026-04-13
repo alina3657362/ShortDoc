@@ -3,5 +3,6 @@ export enum AppRoute {
     Document = '/documents/:id',
     Account = '/:nickname',
     Login = '/login',
+    UserDocument = '/:nickname/documents/:id',
 }
 

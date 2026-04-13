@@ -4,15 +4,18 @@ import {AppRoute} from "../const.ts";
 import {QueryClientProvider} from "@tanstack/react-query";
 import {queryClient} from "../api/query-client.ts";
 import {GuestRoute, PrivateRoute} from "../components/private-route/private-route.tsx";
+import {HelmetProvider} from 'react-helmet-async';
+import {UploadPage} from "../pages/upload-page/upload-page.tsx";
 
 export function App() : React.JSX.Element {
   return (
+    <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
             <Route
               path={AppRoute.Upload}
-              //element={<UploadPage/>}
+              element={<UploadPage/>}
             />
             <Route
               path={AppRoute.Document}
@@ -22,6 +25,10 @@ export function App() : React.JSX.Element {
               <Route
                 path={AppRoute.Account}
                 //element={<AccountPage />}
+              />
+              <Route
+                path={AppRoute.UserDocument}
+                //element={<DocumentPage />}
               />
             </Route>
             <Route element={<GuestRoute />}>
@@ -37,5 +44,6 @@ export function App() : React.JSX.Element {
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>
+    </HelmetProvider>
   )
 }
