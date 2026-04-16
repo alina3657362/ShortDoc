@@ -1,0 +1,114 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 80px 126px;
+  font-family: Montserrat, sans-serif;
+}
+
+.header {
+  margin-bottom: 25px;
+}
+
+.form_text {
+  font-size: 10px;
+  font-weight: 600;
+  margin: 5px 0 26px 0;
+}
+
+.form_container {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 250px;
+  max-width: 270px;
+}
+
+.form_label {
+  flex-grow: 1;
+  font-size: 9px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.input_wrapper {
+  width: 100%;
+  margin-bottom: 13px;
+}
+
+.input_container {
+  position: relative;
+  width: 100%;
+}
+
+.form_input {
+  background-color: #F8F8FA;
+  border: none;
+  border-radius: 10px;
+  width: 100%;
+  height: 36px;
+  padding: 16px 14px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  outline: none;
+  box-sizing: border-box;
+  font-family: Montserrat, sans-serif;
+}
+
+.placeholder {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: Montserrat, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: #7B7B7B;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  background: transparent;
+  padding: 0 4px;
+  line-height: 15px;
+}
+
+.form_input:focus + .placeholder,
+.form_input:not(:placeholder-shown) + .placeholder {
+  top: 6px;
+  transform: translateY(0);
+  font-size: 8px;
+}
+
+.form_input::placeholder {
+  color: transparent;
+}
+
+.login_button {
+  min-width: 250px;
+  max-width: 270px;
+  height: 32px;
+  background-color: #6C9EFF;
+  border: none;
+  border-radius: 9px;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: Montserrat, sans-serif;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.blue {
+  color: #6C9EFF;
+  text-decoration: none;
+}
+
+.forget {
+  color: #6C9EFF;
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: 10px;
+}

@@ -1,6 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {deleteDocument, getDocuments, getDocumentStatus, getDocumentSummary, uploadDocument} from "../api/api.ts";
-import type {Document} from '../types/document.ts';
+import {
+  deleteDocument,
+  getDocuments,
+  getDocumentStatus,
+  getDocumentSummary,
+  uploadDocument
+} from "../api/api.ts";
+import type { Document } from '../types/document.ts';
 
 export const useDocuments = () => {
   return useQuery({
@@ -17,36 +23,43 @@ export const useDocumentStatus = (documentId?: string) => {
     queryKey: ['document-status', documentId],
     queryFn: () => getDocumentStatus(documentId!),
     enabled: !!documentId,
-
     refetchInterval: (query) => {
-      const data = query.state.data;
-      return data?.is_ready ? false : 4000;
+      if (query.state.data?.is_ready) return false;
+      return 3000;
     },
-
     refetchOnWindowFocus: false,
     refetchIntervalInBackground: false,
   });
 };
 
-export const useDocumentSummary = (documentId?: string) => {
+export const useDocumentSummary = (documentId?: string, isReady?: boolean) => {
   return useQuery({
     queryKey: ['document-summary', documentId],
     queryFn: () => getDocumentSummary(documentId!),
-    enabled: !!documentId,
+    enabled: !!documentId && isReady === true,
+    retry: false,
+    staleTime: 10 * 60 * 1000,
   });
 };
 
 export const useDocument = (documentId?: string) => {
   const statusQuery = useDocumentStatus(documentId);
-  const summaryQuery = useDocumentSummary(documentId);
+
+  const summaryQuery = useDocumentSummary(
+    documentId,
+    statusQuery.data?.is_ready
+  );
 
   return {
     status: statusQuery.data,
     summary: summaryQuery.data,
 
-    isLoading: statusQuery.isLoading || summaryQuery.isLoading,
     isReady: statusQuery.data?.is_ready ?? false,
+    isLoading: statusQuery.isLoading ||
+      (statusQuery.data?.is_ready && summaryQuery.isLoading),
+    isFetching: statusQuery.isFetching || summaryQuery.isFetching,
     isError: statusQuery.isError || summaryQuery.isError,
+    error: statusQuery.error || summaryQuery.error,
   };
 };
 
@@ -55,8 +68,15 @@ export const useUploadDocument = () => {
 
   return useMutation({
     mutationFn: uploadDocument,
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
+
+      if (data?.job?.job_id) {
+        queryClient.setQueryData(
+          ['document-status', data.document.id],
+          data.job
+        );
+      }
     },
   });
 };
@@ -66,8 +86,10 @@ export const useDeleteDocument = () => {
 
   return useMutation({
     mutationFn: deleteDocument,
-    onSuccess: () => {
+    onSuccess: (_, documentId) => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
+      queryClient.removeQueries({ queryKey: ['document-status', documentId] });
+      queryClient.removeQueries({ queryKey: ['document-summary', documentId] });
     },
   });
 };

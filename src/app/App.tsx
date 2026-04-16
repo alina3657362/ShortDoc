@@ -6,6 +6,7 @@ import {queryClient} from "../api/query-client.ts";
 import {GuestRoute, PrivateRoute} from "../components/private-route/private-route.tsx";
 import {HelmetProvider} from 'react-helmet-async';
 import {UploadPage} from "../pages/upload-page/upload-page.tsx";
+import {LoginPage} from "../pages/login-page/login-page.tsx";
 
 export function App() : React.JSX.Element {
   return (
@@ -34,7 +35,11 @@ export function App() : React.JSX.Element {
             <Route element={<GuestRoute />}>
               <Route
                 path={AppRoute.Login}
-                //element={<LoginPage />}
+                element={<LoginPage />}
+              />
+              <Route
+                path={AppRoute.Register}
+                //element={<RegisterPage />}
               />
             </Route>
             <Route

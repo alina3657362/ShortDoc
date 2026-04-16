@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from "react-router-dom";
 import styles from './file-view.module.css';
 import { useUploadDocument } from "../../hooks/queries.ts";
@@ -16,20 +16,20 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
   const uploadMutation = useUploadDocument();
 
   const [isChecked, setIsChecked] = useState<boolean>(false);
-  const [documentId, setDocumentId] = useState<string | null>(null);
+
+  const documentId = useMemo(() => {
+    return uploadMutation.isSuccess
+      ? uploadMutation.data?.document?.id
+      : null;
+  }, [uploadMutation.isSuccess, uploadMutation.data?.document?.id]);
 
   const {
     isReady,
-    summary
+    summary,
+    isError,
   } = useDocument(documentId || undefined);
 
   const isPdf = file.type === 'application/pdf';
-
-  useEffect(() => {
-    if (uploadMutation.isSuccess && uploadMutation.data?.document?.id) {
-      setDocumentId(uploadMutation.data.document.id);
-    }
-  }, [uploadMutation.isSuccess, uploadMutation.data?.document?.id]);
 
   useEffect(() => {
     if (isReady && documentId && summary) {
@@ -44,12 +44,15 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
   const handleUpload = () => {
     if (!isPdf || !isChecked) return;
 
-    setDocumentId(null);
+    uploadMutation.reset();
     uploadMutation.mutate(file);
   };
 
   const isUploading = uploadMutation.isPending;
   const isProcessing = !!documentId && !isReady;
+  const hasError = uploadMutation.isError ||
+    uploadMutation.data?.job?.error ||
+    isError;
 
   const isButtonDisabled = !isPdf || !isChecked || isUploading || isProcessing;
 
@@ -59,7 +62,7 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
     buttonContent = (
       <>
         <div className={styles.spinner} />
-        Загрузка...
+        Загрузка файла...
       </>
     );
   } else if (isProcessing) {
@@ -80,13 +83,13 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
           className={styles.delete_button}
           disabled={isUploading || isProcessing}
         >
-          <img src="/img/delete.svg" alt="delete" width="13" height="14"/>
+          <img src="/img/delete.svg" alt="Удалить" width="13" height="14" />
         </button>
       </div>
 
       {!isPdf && (
         <div className={styles.error_message}>
-          Ошибка. Мы не поддерживаем этот формат документа
+          Ошибка. Мы поддерживаем не поддерживаем этот формат
         </div>
       )}
 
@@ -103,14 +106,16 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
           type="checkbox"
           id="personalDataCheckbox"
           checked={isChecked}
-          onChange={() => setIsChecked(!isChecked)}
+          onChange={(e) => setIsChecked(e.target.checked)}
           disabled={isUploading || isProcessing}
           className={styles.personal_input}
           required
         />
         <label htmlFor="personalDataCheckbox" className={styles.personal_label}>
           Нажимая кнопку «Упростить», я даю своё согласие на{' '}
-          <Link to="" className={styles.personal_link}>обработку персональных данных</Link>
+          <Link to="/privacy" className={styles.personal_link}>
+            обработку персональных данных
+          </Link>
         </label>
       </form>
 
