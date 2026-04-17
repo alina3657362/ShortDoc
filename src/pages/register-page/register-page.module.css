@@ -11,16 +11,16 @@
 }
 
 .form_text {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  margin: 5px 0 26px 0;
+  margin: 36px 0 20px 0;
 }
 
 .form_container {
   display: flex;
   flex-wrap: wrap;
-  min-width: 250px;
-  max-width: 270px;
+  min-width: 260px;
+  max-width: 280px;
 }
 
 .form_label {
@@ -37,6 +37,10 @@
 .input_container {
   position: relative;
   width: 100%;
+}
+
+.input_container.repeat {
+  margin-top: 7px;
 }
 
 .form_input {
@@ -80,9 +84,9 @@
   color: transparent;
 }
 
-.login_button {
-  min-width: 250px;
-  max-width: 270px;
+.button {
+  min-width: 260px;
+  max-width: 280px;
   height: 32px;
   background-color: #6C9EFF;
   border: none;
@@ -93,11 +97,6 @@
   font-family: Montserrat, sans-serif;
   cursor: pointer;
 }
-
-.login_button:disabled {
-  background: rgba(108, 158, 255, 0.7);
-}
-
 
 .title {
   font-size: 18px;
@@ -110,40 +109,98 @@
   text-decoration: none;
 }
 
-.forget {
-  color: #6C9EFF;
+.register {
   font-family: inherit;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
   text-decoration: none;
   margin-top: 10px;
 }
 
-.clear_button,
-.toggle_password_button {
+.personal_container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 13px;
+  margin-bottom: 13px;
+  position: relative;
+  min-width: 250px;
+  max-width: 270px;
+}
+
+.personal_input {
   position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+.personal_label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   cursor: pointer;
-  font-size: 14px;
-  color: #7B7B7B;
-  padding: 0;
-  line-height: 1;
-  z-index: 1;
+  font-size: 9px;
+  font-weight: 500;
+  user-select: none;
 }
 
-.clear_button {
-  font-size: 12px;
+.personal_label::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #CED9DC;
+  border-radius: 2px;
+  background: white;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-.toggle_password_button {
-  font-size: 14px;
+.personal_input:hover + .personal_label::before {
+  border-color: #6C9EFF;
 }
 
-.clear_button:hover,
-.toggle_password_button:hover {
-  color: #333;
+.personal_input:checked + .personal_label::before {
+  background: #6C9EFF;
+  border-color: #6C9EFF;
+}
+
+.personal_input:checked + .personal_label::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.personal_link {
+  color: #6C9EFF;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.personal_text {
+  display: inline-block;
+}
+
+.button:disabled {
+  background: rgba(108, 158, 255, 0.7);
+}
+
+.error_message {
+  color: #EB5757;
+  font-size: 8px;
+  font-weight: 600;
+  margin: 0;
+}
+.error {
+  border: 1px solid #EB5757;
+  border-radius: 10px;
 }

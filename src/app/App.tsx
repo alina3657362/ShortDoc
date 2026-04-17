@@ -7,6 +7,7 @@ import {GuestRoute, PrivateRoute} from "../components/private-route/private-rout
 import {HelmetProvider} from 'react-helmet-async';
 import {UploadPage} from "../pages/upload-page/upload-page.tsx";
 import {LoginPage} from "../pages/login-page/login-page.tsx";
+import {RegisterPage} from "../pages/register-page/register-page.tsx";
 
 export function App() : React.JSX.Element {
   return (
@@ -39,7 +40,7 @@ export function App() : React.JSX.Element {
               />
               <Route
                 path={AppRoute.Register}
-                //element={<RegisterPage />}
+                element={<RegisterPage />}
               />
             </Route>
             <Route

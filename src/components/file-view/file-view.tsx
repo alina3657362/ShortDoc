@@ -112,7 +112,7 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
           required
         />
         <label htmlFor="personalDataCheckbox" className={styles.personal_label}>
-          Нажимая кнопку «Упростить», я даю своё согласие на{' '}
+          Нажимая кнопку «Упростить», я даю своё согласие на
           <Link to="/privacy" className={styles.personal_link}>
             обработку персональных данных
           </Link>
