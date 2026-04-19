@@ -3,11 +3,14 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import {AppRoute} from "../const.ts";
 import {QueryClientProvider} from "@tanstack/react-query";
 import {queryClient} from "../api/query-client.ts";
-import {GuestRoute, PrivateRoute} from "../components/private-route/private-route.tsx";
+import {GuestRoute} from "../components/private-route/private-route.tsx";
 import {HelmetProvider} from 'react-helmet-async';
 import {UploadPage} from "../pages/upload-page/upload-page.tsx";
 import {LoginPage} from "../pages/login-page/login-page.tsx";
 import {RegisterPage} from "../pages/register-page/register-page.tsx";
+import {DocumentPage} from "../pages/document-page/document-page.tsx";
+import {NotFoundPage} from "../pages/404-page/404-page.tsx";
+import {AccountPage} from "../pages/account-page/account-page.tsx";
 
 export function App() : React.JSX.Element {
   return (
@@ -21,18 +24,18 @@ export function App() : React.JSX.Element {
             />
             <Route
               path={AppRoute.Document}
-              //element={<DocumentPage/>}
+              element={<DocumentPage/>}
             />
-            <Route element={<PrivateRoute />}>
+            {/*<Route element={<PrivateRoute />}>*/}
               <Route
                 path={AppRoute.Account}
-                //element={<AccountPage />}
+                element={<AccountPage />}
               />
-              <Route
+              {/*<Route
                 path={AppRoute.UserDocument}
-                //element={<DocumentPage />}
+                element={<DocumentPage />}
               />
-            </Route>
+            </Route>*/}
             <Route element={<GuestRoute />}>
               <Route
                 path={AppRoute.Login}
@@ -45,7 +48,7 @@ export function App() : React.JSX.Element {
             </Route>
             <Route
               path='*'
-              //element={<NotFoundPage />}
+              element={<NotFoundPage />}
             />
           </Routes>
         </BrowserRouter>
