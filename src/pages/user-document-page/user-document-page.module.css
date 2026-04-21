@@ -1,0 +1,112 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 62px;
+  flex-grow: 1;
+}
+
+.read_area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
+  width: 41%;
+  min-width: 420px;
+  min-height: 417px;
+  max-height: 450px;
+}
+
+.text {
+  background-color: #F7F7F7;
+  border-radius: 14px;
+  width: 100%;
+  min-width: 420px;
+  min-height: 417px;
+  height: 100%;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #6C9EFF #F7F7F7;
+}
+
+.scrollable-div::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-div::-webkit-scrollbar-track {
+  background: #F7F7F7;
+}
+
+.scrollable-div::-webkit-scrollbar-thumb {
+  background: #6C9EFF;
+  border-radius: 4px;
+}
+
+.title {
+  font-family: Montserrat, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  align-self: flex-start;
+  margin: 0;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 29px 0;
+}
+
+.button {
+  border: none;
+  background: #6C9EFF;
+  color: white;
+  padding: 13px 190px;
+  font-family: Montserrat, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.comment {
+  font-family: Montserrat, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.title_page {
+  font-family: Montserrat, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  height: 18px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  align-items: center;
+  padding: 0 61px;
+  width: 100%;
+}
+
+.back {
+  font-size: 12px;
+  color: #6C9EFF;
+  margin: 0;
+  text-decoration: none;
+  text-underline: none;
+}
+
+.filename {
+  margin: 0;
+}
+
+.spacer {
+  width: 145px;
+}

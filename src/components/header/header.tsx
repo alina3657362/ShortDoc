@@ -1,6 +1,8 @@
 import React from "react";
 import {Logo} from "../logo/logo.tsx";
 import styles from './header.module.css';
+import {Link} from "react-router-dom";
+import {AppRoute} from "../../const.ts";
 
 export function Header(): React.JSX.Element {
   return (
@@ -9,8 +11,12 @@ export function Header(): React.JSX.Element {
         <Logo />
       </div>
       <div className={styles.icons}>
-        <img className={styles.account} src="/img/user_disable.svg" alt="user account icon" width="44" height="44"/>
-        <img className={styles.out} src="/img/out.svg" alt="out of account icon" width="44" height="44"/>
+        <Link to={AppRoute.Account}>
+          <img className={styles.account} src="/img/user_active.svg" alt="user account icon" width="44" height="44"/>
+        </Link>
+        <button className={styles.logout}>
+          <img className={styles.out} src="/img/out.svg" alt="loguot icon" width="44" height="44"/>
+        </button>
       </div>
     </div>
   )

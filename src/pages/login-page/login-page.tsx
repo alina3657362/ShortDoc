@@ -13,7 +13,6 @@ export function LoginPage(): React.JSX.Element {
   const clearEmail = () => setEmail('');
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
-  // Проверка, что оба поля заполнены
   const isFormValid = email.trim() !== '' && password.trim() !== '';
 
   const handleSubmit = (e: React.FormEvent) => {

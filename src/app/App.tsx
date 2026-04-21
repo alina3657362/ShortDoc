@@ -11,6 +11,7 @@ import {RegisterPage} from "../pages/register-page/register-page.tsx";
 import {DocumentPage} from "../pages/document-page/document-page.tsx";
 import {NotFoundPage} from "../pages/404-page/404-page.tsx";
 import {AccountPage} from "../pages/account-page/account-page.tsx";
+import {UserDocumentPage} from "../pages/user-document-page/user-document-page.tsx";
 
 export function App() : React.JSX.Element {
   return (
@@ -31,11 +32,11 @@ export function App() : React.JSX.Element {
                 path={AppRoute.Account}
                 element={<AccountPage />}
               />
-              {/*<Route
+              <Route
                 path={AppRoute.UserDocument}
-                element={<DocumentPage />}
+                element={<UserDocumentPage />}
               />
-            </Route>*/}
+            {/*</Route>*/}
             <Route element={<GuestRoute />}>
               <Route
                 path={AppRoute.Login}
