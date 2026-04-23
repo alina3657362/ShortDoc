@@ -23,7 +23,7 @@ export function AccountPage() : React.JSX.Element {
           <img src="/img/auth.svg" alt="user icon" width="106" height="106"/>
           <div className={styles.wrapper}>
             <h1 className={styles.nickname}>@{user.nickname}</h1>
-            <Link to={AppRoute.Edit} className={styles.edit}>Редактировать</Link>
+            <Link to={AppRoute.EditAccount} className={styles.edit}>Редактировать</Link>
           </div>
         </div>
         <HistoryTable docs={docs} />

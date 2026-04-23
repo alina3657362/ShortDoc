@@ -9,9 +9,9 @@ import {UploadPage} from "../pages/upload-page/upload-page.tsx";
 import {LoginPage} from "../pages/login-page/login-page.tsx";
 import {RegisterPage} from "../pages/register-page/register-page.tsx";
 import {DocumentPage} from "../pages/document-page/document-page.tsx";
-import {NotFoundPage} from "../pages/404-page/404-page.tsx";
 import {AccountPage} from "../pages/account-page/account-page.tsx";
 import {UserDocumentPage} from "../pages/user-document-page/user-document-page.tsx";
+import {EditAccountPage} from "../pages/edit-account-page/edit-account-page.tsx";
 
 export function App() : React.JSX.Element {
   return (
@@ -36,6 +36,10 @@ export function App() : React.JSX.Element {
                 path={AppRoute.UserDocument}
                 element={<UserDocumentPage />}
               />
+              <Route
+                path={AppRoute.EditAccount}
+                element={<EditAccountPage />}
+              />
             {/*</Route>*/}
             <Route element={<GuestRoute />}>
               <Route
@@ -47,10 +51,6 @@ export function App() : React.JSX.Element {
                 element={<RegisterPage />}
               />
             </Route>
-            <Route
-              path='*'
-              element={<NotFoundPage />}
-            />
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>

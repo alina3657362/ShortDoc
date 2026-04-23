@@ -11,6 +11,7 @@ interface HistoryTableProps {
 export function HistoryTable ({docs} : HistoryTableProps): React.JSX.Element {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const user = mockUser;
+  docs = [];
 
   const hasAnySelected = selectedIds.length > 0;
 
@@ -37,35 +38,42 @@ export function HistoryTable ({docs} : HistoryTableProps): React.JSX.Element {
             />
           </button>
         </div>
-        {docs.map((doc) => (
-          <div
-            key={doc.id}
-            className={`${styles.string} ${selectedIds.includes(doc.id) ? styles.selected : ''}`}
-          >
-            <label className={styles.wrapper}>
-              <input
-                className={styles.checkbox}
-                type="checkbox"
-                checked={selectedIds.includes(doc.id)}
-                onChange={() => toggleCheckbox(doc.id)}
-              />
-              <div className={styles.custom}></div>
-            </label>
-
-            <Link to={`/${user.nickname}/documents/${doc.id}`} className={styles.doc_data}>
-              <p className={styles.doc_name}>{doc.filename}</p>
-              <p className={styles.doc_date}>
-                {new Date(doc.created_at).toLocaleDateString("ru-RU", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                })}
-              </p>
-
-              <div className={styles.delete_placeholder} />
-            </Link>
+        {docs.length === 0 ? (
+          <div className={styles.string}>
+            <p className={`${styles.doc_name} ${styles.empty}`}>здесь будет история твоих документов :)</p>
+            <p className={`${styles.doc_date} ${styles.empty}`}>00.00.0000</p>
           </div>
-        ))}
+        ) : (
+          docs.map((doc) => (
+            <div
+              key={doc.id}
+              className={`${styles.string} ${selectedIds.includes(doc.id) ? styles.selected : ''}`}
+            >
+              <label className={styles.wrapper}>
+                <input
+                  className={styles.checkbox}
+                  type="checkbox"
+                  checked={selectedIds.includes(doc.id)}
+                  onChange={() => toggleCheckbox(doc.id)}
+                />
+                <div className={styles.custom}></div>
+              </label>
+
+              <Link to={`/${user.nickname}/documents/${doc.id}`} className={styles.doc_data}>
+                <p className={styles.doc_name}>{doc.filename}</p>
+                <p className={styles.doc_date}>
+                  {new Date(doc.created_at).toLocaleDateString("ru-RU", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
+                </p>
+
+                <div className={styles.delete_placeholder} />
+              </Link>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

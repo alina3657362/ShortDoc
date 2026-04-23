@@ -52,10 +52,6 @@
   cursor: pointer;
 }
 
-.string:last-child {
-  border-bottom: none;
-}
-
 .string.selected {
   background-color: #E8F0FF;
 }
@@ -165,3 +161,8 @@
   border-width: 0 3px 3px 0;
   transform: rotate(45deg);
 }
+
+.empty {
+  color: #a2a2a2;
+}
+
