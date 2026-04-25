@@ -41,26 +41,24 @@ class DocumentStatusResponse(BaseModel):
     error: Optional[str]
 
 
-class PartyDto(BaseModel):
-    name: str
-    role: str
-
-
-class ImportantDateDto(BaseModel):
-    label: str
-    value: str
-
-
 class SummaryResponse(BaseModel):
     id: str
     document_id: str
     is_ready: bool
     summary: str
-    parties: list[PartyDto]
-    important_dates: list[ImportantDateDto]
     created_at: str
 
 
 class DeleteDocumentResponse(BaseModel):
     success: bool
     document_id: str
+
+
+class PdfTextResponse(BaseModel):
+    filename: str
+    text: str
+
+
+class SummaryFromFileResponse(BaseModel):
+    filename: str
+    summary: str

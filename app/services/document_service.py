@@ -1,5 +1,5 @@
-from datetime import datetime, timezone
 import uuid
+from datetime import datetime, timezone
 
 from app.storage.memory import documents_store, jobs_store, summaries_store
 
@@ -21,7 +21,7 @@ class DocumentService:
     def generate_summary_id() -> str:
         return f"sum_{uuid.uuid4().hex[:12]}"
 
-    async def upload_document(self, filename: str, content: bytes) -> dict:
+    async def upload_document(self, filename: str, content: bytes, user_id: str) -> dict:
         size_bytes = len(content)
         document_id = self.generate_document_id()
         job_id = self.generate_job_id()
@@ -29,6 +29,7 @@ class DocumentService:
 
         document = {
             "id": document_id,
+            "user_id": user_id,
             "filename": filename,
             "size_bytes": size_bytes,
             "status": "processing",
@@ -57,10 +58,13 @@ class DocumentService:
             "job": job,
         }
 
-    async def get_documents(self) -> dict:
+    async def get_documents(self, user_id: str) -> dict:
         items = []
 
         for document_id, document in documents_store.items():
+            if document.get("user_id") != user_id:
+                continue
+
             job = jobs_store.get(document_id)
 
             items.append(
@@ -73,7 +77,6 @@ class DocumentService:
             )
 
         items.sort(key=lambda x: x["created_at"], reverse=True)
-
         return {"items": items}
 
     async def get_status(self, document_id: str) -> dict | None:
