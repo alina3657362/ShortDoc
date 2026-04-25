@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from app.storage.memory import documents_store, jobs_store, summaries_store
+from app.storage.memory import documents_store, summaries_store
 
 
 class DocumentService:
@@ -14,17 +14,20 @@ class DocumentService:
         return f"doc_{uuid.uuid4().hex[:12]}"
 
     @staticmethod
-    def generate_job_id() -> str:
-        return f"job_{uuid.uuid4().hex[:12]}"
-
-    @staticmethod
     def generate_summary_id() -> str:
         return f"sum_{uuid.uuid4().hex[:12]}"
 
-    async def upload_document(self, filename: str, content: bytes, user_id: str) -> dict:
+    async def create_document_with_summary(
+            self,
+            filename: str,
+            content: bytes,
+            user_id: str,
+            extracted_text: str,
+            summary: str,
+    ) -> dict:
         size_bytes = len(content)
         document_id = self.generate_document_id()
-        job_id = self.generate_job_id()
+        summary_id = self.generate_summary_id()
         now = self.utc_now()
 
         document = {
@@ -32,31 +35,22 @@ class DocumentService:
             "user_id": user_id,
             "filename": filename,
             "size_bytes": size_bytes,
-            "status": "processing",
             "created_at": now,
             "updated_at": now,
         }
 
-        job = {
-            "job_id": job_id,
+        summary_item = {
+            "id": summary_id,
             "document_id": document_id,
-            "is_ready": False,
-            "error": None,
+            "is_ready": True,
+            "summary": summary,
+            "created_at": now,
         }
 
         documents_store[document_id] = document
-        jobs_store[document_id] = job
+        summaries_store[document_id] = summary_item
 
-        return {
-            "document": {
-                "id": document["id"],
-                "filename": document["filename"],
-                "size_bytes": document["size_bytes"],
-                "created_at": document["created_at"],
-                "updated_at": document["updated_at"],
-            },
-            "job": job,
-        }
+        return summary_item
 
     async def get_documents(self, user_id: str) -> dict:
         items = []
@@ -65,80 +59,49 @@ class DocumentService:
             if document.get("user_id") != user_id:
                 continue
 
-            job = jobs_store.get(document_id)
-
             items.append(
                 {
                     "id": document["id"],
                     "filename": document["filename"],
-                    "is_ready": job["is_ready"] if job else False,
+                    "is_ready": True,
                     "created_at": document["created_at"],
                 }
             )
 
         items.sort(key=lambda x: x["created_at"], reverse=True)
+
         return {"items": items}
 
-    async def get_status(self, document_id: str) -> dict | None:
-        return jobs_store.get(document_id)
+    async def get_summary(self, document_id: str, user_id: str) -> dict | None:
+        document = documents_store.get(document_id)
 
-    async def get_summary(self, document_id: str) -> dict | None:
+        if document is None:
+            return None
+
+        if document.get("user_id") != user_id:
+            return None
+
         return summaries_store.get(document_id)
 
-    async def document_exists(self, document_id: str) -> bool:
-        return document_id in documents_store
+    async def document_exists(self, document_id: str, user_id: str) -> bool:
+        document = documents_store.get(document_id)
 
-    async def delete_document(self, document_id: str) -> bool:
-        if document_id not in documents_store:
+        if document is None:
+            return False
+
+        return document.get("user_id") == user_id
+
+    async def delete_document(self, document_id: str, user_id: str) -> bool:
+        document = documents_store.get(document_id)
+
+        if document is None:
+            return False
+
+        if document.get("user_id") != user_id:
             return False
 
         documents_store.pop(document_id, None)
-        jobs_store.pop(document_id, None)
         summaries_store.pop(document_id, None)
-
-        return True
-
-    async def mark_ready(self, document_id: str) -> bool:
-        document = documents_store.get(document_id)
-        job = jobs_store.get(document_id)
-
-        if document is None or job is None:
-            return False
-
-        now = self.utc_now()
-
-        document["status"] = "ready"
-        document["updated_at"] = now
-        job["is_ready"] = True
-        job["error"] = None
-
-        summaries_store[document_id] = {
-            "id": self.generate_summary_id(),
-            "document_id": document_id,
-            "is_ready": True,
-            "summary": "Это тестовое summary для юридического документа.",
-            "parties": [
-                {
-                    "name": "ООО Ромашка",
-                    "role": "Заказчик",
-                },
-                {
-                    "name": "ООО Вектор",
-                    "role": "Исполнитель",
-                },
-            ],
-            "important_dates": [
-                {
-                    "label": "Дата подписания",
-                    "value": "2026-03-01",
-                },
-                {
-                    "label": "Дата окончания",
-                    "value": "2027-03-01",
-                },
-            ],
-            "created_at": now,
-        }
 
         return True
 

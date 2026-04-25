@@ -3,11 +3,9 @@ from app.schemas.common import ErrorResponse
 from app.schemas.documents import (
     DeleteDocumentResponse,
     DocumentListResponse,
-    DocumentStatusResponse,
-    SummaryResponse,
-    UploadDocumentResponse,
     PdfTextResponse,
     SummaryFromFileResponse,
+    SummaryResponse,
 )
 from app.services.document_service import document_service
 from app.services.llm_service import llm_service
@@ -17,18 +15,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 router = APIRouter(prefix="/api/v1/documents", tags=["Documents"])
 
 
-@router.post(
-    "",
-    response_model=UploadDocumentResponse,
-    status_code=status.HTTP_201_CREATED,
-    responses={
-        400: {"model": ErrorResponse},
-    },
-)
-async def upload_document(
-        file: UploadFile = File(...),
-        current_user: dict = Depends(require_authorization),
-):
+def validate_pdf_file(file: UploadFile) -> None:
     if not file.filename:
         raise HTTPException(
             status_code=400,
@@ -51,12 +38,44 @@ async def upload_document(
             },
         )
 
-    content = await file.read()
 
-    return await document_service.upload_document(
+@router.post(
+    "",
+    response_model=SummaryResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        400: {"model": ErrorResponse},
+        401: {"model": ErrorResponse},
+    },
+)
+async def upload_document(
+        file: UploadFile = File(...),
+        current_user: dict = Depends(require_authorization),
+):
+    validate_pdf_file(file)
+
+    content = await file.read()
+    document_text = await pdf_service.extract_text(content)
+
+    if not document_text.strip():
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": {
+                    "code": "EMPTY_PDF_TEXT",
+                    "message": "Could not extract text from PDF",
+                }
+            },
+        )
+
+    result = await llm_service.summarize_document(document_text)
+
+    return await document_service.create_document_with_summary(
         filename=file.filename,
         content=content,
         user_id=current_user["id"],
+        extracted_text=document_text,
+        summary=result["summary"],
     )
 
 
@@ -74,60 +93,29 @@ async def get_documents(
 
 
 @router.get(
-    "/{document_id}/status",
-    response_model=DocumentStatusResponse,
-    responses={
-        401: {"model": ErrorResponse},
-        404: {"model": ErrorResponse},
-    },
-)
-async def get_document_status(document_id: str, ):
-    job = await document_service.get_status(document_id)
-
-    if job is None:
-        raise HTTPException(
-            status_code=404,
-            detail={
-                "error": {
-                    "code": "DOCUMENT_NOT_FOUND",
-                    "message": "Document not found",
-                }
-            },
-        )
-
-    return job
-
-
-@router.get(
     "/{document_id}/summary",
     response_model=SummaryResponse,
     responses={
         401: {"model": ErrorResponse},
         404: {"model": ErrorResponse},
-        409: {"model": ErrorResponse},
     },
 )
-async def get_document_summary(document_id: str, ):
-    exists = await document_service.document_exists(document_id)
-    if not exists:
+async def get_document_summary(
+        document_id: str,
+        current_user: dict = Depends(require_authorization),
+):
+    summary = await document_service.get_summary(
+        document_id=document_id,
+        user_id=current_user["id"],
+    )
+
+    if summary is None:
         raise HTTPException(
             status_code=404,
             detail={
                 "error": {
                     "code": "DOCUMENT_NOT_FOUND",
                     "message": "Document not found",
-                }
-            },
-        )
-
-    summary = await document_service.get_summary(document_id)
-    if summary is None:
-        raise HTTPException(
-            status_code=409,
-            detail={
-                "error": {
-                    "code": "SUMMARY_NOT_READY",
-                    "message": "Summary is not ready yet",
                 }
             },
         )
@@ -143,8 +131,14 @@ async def get_document_summary(document_id: str, ):
         404: {"model": ErrorResponse},
     },
 )
-async def delete_document(document_id: str, ):
-    deleted = await document_service.delete_document(document_id)
+async def delete_document(
+        document_id: str,
+        current_user: dict = Depends(require_authorization),
+):
+    deleted = await document_service.delete_document(
+        document_id=document_id,
+        user_id=current_user["id"],
+    )
 
     if not deleted:
         raise HTTPException(
@@ -164,58 +158,14 @@ async def delete_document(document_id: str, ):
 
 
 @router.post(
-    "/{document_id}/mock-ready",
-    responses={
-        404: {"model": ErrorResponse},
-    },
-)
-async def mock_ready(document_id: str):
-    marked = await document_service.mark_ready(document_id)
-
-    if not marked:
-        raise HTTPException(
-            status_code=404,
-            detail={
-                "error": {
-                    "code": "DOCUMENT_NOT_FOUND",
-                    "message": "Document not found",
-                }
-            },
-        )
-
-    return {"success": True}
-
-
-@router.post(
     "/extract-text",
     response_model=PdfTextResponse,
     responses={
         400: {"model": ErrorResponse},
-        401: {"model": ErrorResponse},
     },
 )
-async def extract_pdf_text(file: UploadFile = File(...), ):
-    if not file.filename:
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "error": {
-                    "code": "INVALID_FILE",
-                    "message": "Filename is required",
-                }
-            },
-        )
-
-    if not file.filename.lower().endswith(".pdf"):
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "error": {
-                    "code": "UNSUPPORTED_FILE_TYPE",
-                    "message": "Only PDF files are supported",
-                }
-            },
-        )
+async def extract_pdf_text(file: UploadFile = File(...)):
+    validate_pdf_file(file)
 
     content = await file.read()
     text = await pdf_service.extract_text(content)
@@ -236,27 +186,7 @@ async def extract_pdf_text(file: UploadFile = File(...), ):
 async def summarize_pdf(
         file: UploadFile = File(...),
 ):
-    if not file.filename:
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "error": {
-                    "code": "INVALID_FILE",
-                    "message": "Filename is required",
-                }
-            },
-        )
-
-    if not file.filename.lower().endswith(".pdf"):
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "error": {
-                    "code": "UNSUPPORTED_FILE_TYPE",
-                    "message": "Only PDF files are supported",
-                }
-            },
-        )
+    validate_pdf_file(file)
 
     content = await file.read()
     document_text = await pdf_service.extract_text(content)
