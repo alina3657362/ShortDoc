@@ -1,8 +1,8 @@
 import axios, {type AxiosInstance, type InternalAxiosRequestConfig} from 'axios';
 import {getToken} from './token.ts';
 
-const baseURL = 'https://api/v1';
-const requestTimeout = 15000;
+const baseURL = `${import.meta.env.VITE_API_URL}/api/v1`;
+const requestTimeout = 60000;
 
 export const createAPI = () : AxiosInstance => {
     const api = axios.create({
@@ -11,13 +11,11 @@ export const createAPI = () : AxiosInstance => {
     });
 
     api.interceptors.request.use(
-        (config : InternalAxiosRequestConfig) => {
+        (config: InternalAxiosRequestConfig) => {
             const token = getToken();
-
-            if (token && config.headers){
+            if (token && config.headers) {
                 config.headers['Authorization'] = `Bearer ${token}`;
             }
-
             return config;
         }
     );
