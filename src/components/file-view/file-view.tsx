@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from "react-router-dom";
+import React, {useState} from 'react';
 import styles from './file-view.module.css';
-import { useUploadDocument } from "../../hooks/queries.ts";
-import { useDocument } from "../../hooks/queries.ts";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {useAuth} from "../../context/auth-context.tsx";
+import {useExtractText, useSummarize, useUploadDocument} from "../../hooks/queries.ts";
+import {AppRoute} from "../../const.ts";
+import type {DocumentPageState} from "../../types/document-page-state.ts";
 
 interface FileViewProps {
   file: File;
@@ -13,66 +14,52 @@ interface FileViewProps {
 export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
   const navigate = useNavigate();
 
-  const uploadMutation = useUploadDocument();
+  const { isAuth } = useAuth();
 
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [isAgreed, setIsAgreed] = useState(false);
 
-  const documentId = useMemo(() => {
-    return uploadMutation.isSuccess
-      ? uploadMutation.data?.document?.id
-      : null;
-  }, [uploadMutation.isSuccess, uploadMutation.data?.document?.id]);
-
-  const {
-    isReady,
-    summary,
-    isError,
-  } = useDocument(documentId || undefined);
+  const extractTextMutation = useExtractText();
+  const uploadDocumentMutation = useUploadDocument();
+  const summarizeMutation = useSummarize();
 
   const isPdf = file.type === 'application/pdf';
+  const isLoading =
+    extractTextMutation.isPending ||
+    summarizeMutation.isPending ||
+    uploadDocumentMutation.isPending;
 
-  useEffect(() => {
-    if (isReady && documentId && summary) {
-      const timer = setTimeout(() => {
-        navigate(`/documents/${documentId}`);
-      }, 800);
+  const isButtonDisabled = !isPdf || !isAgreed || isLoading;
 
-      return () => clearTimeout(timer);
+  const handleSimplify = async () => {
+    if (!isPdf || !isAgreed) return;
+
+    try {
+      const extractResult = await extractTextMutation.mutateAsync(file);
+      let summaryResult;
+      let documentId: string | undefined;
+
+      if (isAuth) {
+        const uploadResult = await uploadDocumentMutation.mutateAsync(file);
+        summaryResult = uploadResult;
+        documentId = uploadResult.document_id;
+      } else {
+        summaryResult = await summarizeMutation.mutateAsync(file);
+      }
+
+      navigate(documentId ? `/documents/${documentId}` : AppRoute.Summary, {
+        replace: true,
+        state: {
+          filename: extractResult.filename || file.name,
+          text: extractResult.text,
+          summary: summaryResult.summary,
+          documentId,
+        } as DocumentPageState,
+      });
+
+    } catch (error) {
+      console.error('Ошибка при обработке документа:', error);
     }
-  }, [isReady, documentId, summary, navigate]);
-
-  const handleUpload = () => {
-    if (!isPdf || !isChecked) return;
-
-    uploadMutation.reset();
-    uploadMutation.mutate(file);
   };
-
-  const isUploading = uploadMutation.isPending;
-  const isProcessing = !!documentId && !isReady;
-  const hasError = uploadMutation.isError ||
-    uploadMutation.data?.job?.error ||
-    isError;
-
-  const isButtonDisabled = !isPdf || !isChecked || isUploading || isProcessing;
-
-  let buttonContent: React.ReactNode = 'Упростить';
-
-  if (isUploading) {
-    buttonContent = (
-      <>
-        <div className={styles.spinner} />
-        Загрузка файла...
-      </>
-    );
-  } else if (isProcessing) {
-    buttonContent = (
-      <>
-        <div className={styles.spinner} />
-        Упрощаем документ...
-      </>
-    );
-  }
 
   return (
     <div className={styles.container}>
@@ -81,7 +68,6 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
         <button
           onClick={onRemove}
           className={styles.delete_button}
-          disabled={isUploading || isProcessing}
         >
           <img src="/img/delete.svg" alt="Удалить" width="13" height="14" />
         </button>
@@ -94,26 +80,25 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
       )}
 
       <button
-        onClick={handleUpload}
-        disabled={isButtonDisabled}
         className={`${styles.upload_button} ${!isPdf ? styles.error : ''}`}
+        onClick={handleSimplify}
+        disabled={isButtonDisabled}
       >
-        {buttonContent}
+        {isLoading ? 'Упрощаем...' : 'Упростить'}
       </button>
 
       <form className={styles.personal_container}>
         <input
           type="checkbox"
           id="personalDataCheckbox"
-          checked={isChecked}
-          onChange={(e) => setIsChecked(e.target.checked)}
-          disabled={isUploading || isProcessing}
           className={styles.personal_input}
+          checked={isAgreed}
+          onChange={(e) => setIsAgreed(e.target.checked)}
           required
         />
         <label htmlFor="personalDataCheckbox" className={styles.personal_label}>
           Нажимая кнопку «Упростить», я даю своё согласие на
-          <Link to="/privacy" className={styles.personal_link}>
+          <Link to="" className={styles.personal_link}>
             обработку персональных данных
           </Link>
         </label>

@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import styles from './register-page.module.css';
 import { Helmet } from "react-helmet-async";
 import { Logo } from "../../components/logo/logo.tsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppRoute } from "../../const.ts";
+import { useAuth } from "../../context/auth-context.tsx";
+import { useRegister } from "../../hooks/queries.ts";
 
 export function RegisterPage(): React.JSX.Element {
   const [email, setEmail] = useState('');
@@ -12,15 +14,16 @@ export function RegisterPage(): React.JSX.Element {
   const [repeatPassword, setRepeatPassword] = useState('');
   const [isChecked, setIsChecked] = useState(false);
 
+  const { login: loginUser } = useAuth();
+  const registerMutation = useRegister();
+  const navigate = useNavigate();
+
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [repeatPasswordTouched, setRepeatPasswordTouched] = useState(false);
 
-  // Валидация email
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  // Валидация пароля: минимум 6 символов, хотя бы одна буква и одна цифра
-  const isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(password);
-  // Проверка совпадения паролей
+  const isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password);
   const doPasswordsMatch = password === repeatPassword && repeatPassword !== '';
 
   const isFormValid =
@@ -30,11 +33,22 @@ export function RegisterPage(): React.JSX.Element {
     doPasswordsMatch &&
     isChecked;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isFormValid) {
-      // Логика регистрации
-      alert('Форма отправлена!');
+    if (!isFormValid) return;
+
+    try {
+      await registerMutation.mutateAsync({
+        email,
+        nickname: nickname.trim(),
+        password,
+      });
+
+      await loginUser({ email, password });
+
+      navigate(AppRoute.Upload);
+    } catch (err: any) {
+      console.error('Ошибка регистрации:', err);
     }
   };
 
@@ -43,9 +57,11 @@ export function RegisterPage(): React.JSX.Element {
       <Helmet>
         <title>ShortDoc: Зарегистрироваться</title>
       </Helmet>
+
       <div className={styles.header}>
         <Logo />
       </div>
+
       <h1 className={styles.title}>
         Добро пожаловать в ShortDoc 👋 <br />
         С нами ознакомиться с документами станет проще 🚀
@@ -87,7 +103,10 @@ export function RegisterPage(): React.JSX.Element {
               placeholder=" "
               required
               value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
+              onChange={(e) => {
+                let value = e.target.value.replace(/^@+/, '').trim();
+                setNickname(value);
+              }}
             />
             <span className={styles.placeholder}>@nickname</span>
           </div>
@@ -115,6 +134,7 @@ export function RegisterPage(): React.JSX.Element {
               Пароль должен содержать минимум 6 символов, хотя бы одну букву и одну цифру
             </p>
           )}
+
           <div className={`${styles.input_container} ${styles.repeat}`}>
             <input
               className={`${styles.form_input} ${repeatPasswordTouched && !doPasswordsMatch ? styles.error : ''}`}
@@ -158,6 +178,7 @@ export function RegisterPage(): React.JSX.Element {
         className={styles.button}
         type="submit"
         disabled={!isFormValid}
+        onClick={handleSubmit}
       >
         Зарегистрироваться
       </button>

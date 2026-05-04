@@ -1,23 +1,22 @@
 import { createAPI } from './index.ts';
 import type {RegisterRequest} from "../types/register-request.ts";
 import type {
-  AuthResponse,
   DocumentsListResponse,
-  ExtractTextResponse,
-  SaveDocumentResponse,
-  SummarizeResponse
+  ExtractTextResponse, LoginResponse, RegisterResponse,
+  SummarizeResponse,
 } from "../types/responses.ts";
 import type {LoginRequest} from "../types/login-request.ts";
+import type {Summary} from "../types/summary.ts";
 
 export const api = createAPI();
 
-export const register = async (data: RegisterRequest): Promise<AuthResponse> => {
-  const { data: response } = await api.post<AuthResponse>('/auth/register', data);
+export const register = async (data: RegisterRequest): Promise<RegisterResponse> => {
+  const { data: response } = await api.post<RegisterResponse>('/auth/register', data);
   return response;
 };
 
-export const login = async (data: LoginRequest): Promise<AuthResponse> => {
-  const { data: response } = await api.post<AuthResponse>('/auth/login', data);
+export const login = async (data: LoginRequest): Promise<LoginResponse> => {
+  const { data: response } = await api.post<LoginResponse>('/auth/login', data);
   return response;
 };
 
@@ -32,7 +31,7 @@ export const extractText = async (file: File): Promise<ExtractTextResponse> => {
   return data;
 };
 
-export const summarizePublic = async (file: File): Promise<SummarizeResponse> => {
+export const summarize = async (file: File): Promise<SummarizeResponse> => {
   const formData = new FormData();
   formData.append('file', file);
 
@@ -43,11 +42,11 @@ export const summarizePublic = async (file: File): Promise<SummarizeResponse> =>
   return data;
 };
 
-export const saveDocument = async (file: File): Promise<SaveDocumentResponse> => {
+export const uploadDocument = async (file: File): Promise<Summary> => {
   const formData = new FormData();
   formData.append('file', file);
 
-  const { data } = await api.post<SaveDocumentResponse>('/documents', formData, {
+  const { data } = await api.post<Summary>('/documents', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 
@@ -56,14 +55,14 @@ export const saveDocument = async (file: File): Promise<SaveDocumentResponse> =>
 
 export const getDocumentsList = async (): Promise<DocumentsListResponse> => {
   const { data } = await api.get<DocumentsListResponse>('/documents');
+  console.log('=== GET DOCUMENTS RESPONSE ===', data);
+  console.log('Token used (from localStorage or wherever you store it):',
+    localStorage.getItem('short-doc-token') || 'no token'); // подставь свой способ хранения токена
   return data;
 };
 
-class DocumentSummary {
-}
-
-export const getDocumentSummary = async (documentId: string): Promise<DocumentSummary> => {
-  const { data } = await api.get<DocumentSummary>(`/documents/${documentId}/summary`);
+export const getDocumentSummary = async (documentId: string): Promise<Summary> => {
+  const { data } = await api.get<Summary>(`/documents/${documentId}/summary`);
   return data;
 };
 

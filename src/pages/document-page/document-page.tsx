@@ -1,34 +1,44 @@
 import React from "react";
-import {mockDocuments} from "../../mocks/documents.ts";
-import {mockSummary} from "../../mocks/summary.ts";
 import styles from './document-page.module.css';
 import {Helmet} from "react-helmet-async";
 import {Header} from "../../components/header/header.tsx";
 import {ReadArea} from "../../components/read-area/read-area.tsx";
-import {Link} from "react-router-dom";
+import {Link, useLocation, useParams} from "react-router-dom";
 import {AppRoute} from "../../const.ts";
+import {useDocumentById, useDocumentSummary} from "../../hooks/queries.ts";
+import type {DocumentPageState} from "../../types/document-page-state.ts";
 
 export function DocumentPage() : React.JSX.Element {
-  const doc = mockDocuments[0];
-  const sum = mockSummary;
+  const { documentId } = useParams<{ documentId: string }>();
+  const location = useLocation();
+  const state = location.state as DocumentPageState | null;
+
+  const isGuestMode = !documentId && !!state;
+
+  const { document } = useDocumentById(documentId || '');
+  const { data: serverSummary } = useDocumentSummary(documentId || '');
+
+  const filename = isGuestMode ? state?.filename : document?.filename;
+  const text = state?.text;
+  const summary = isGuestMode ? state?.summary : serverSummary?.summary;
 
   return (
     <div className={styles.page}>
       <Helmet>
-        <title>ShortDoc: {doc.filename}</title>
+        <title>ShortDoc: {filename}</title>
       </Helmet>
       <Header />
       <div className={styles.container}>
         <div className={styles.read_area}>
           <h2 className={styles.title}>Документ:</h2>
           <div className={styles.text}>
-            <ReadArea text={doc.toString()} />
+            <ReadArea text={text || "Ошибка при получении текста"} />
           </div>
         </div>
         <div className={styles.read_area}>
           <h2 className={styles.title}>Итог:</h2>
           <div className={styles.text}>
-            <ReadArea text={sum.summary} />
+            <ReadArea text={summary || "Ошибка при обработке текста"} />
           </div>
         </div>
       </div>

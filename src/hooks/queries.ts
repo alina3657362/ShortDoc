@@ -1,79 +1,98 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  saveDocument,
+  register,
+  login,
+  extractText,
   getDocumentsList,
   getDocumentSummary,
-  deleteDocument,
+  deleteDocument, summarize, uploadDocument,
 } from "../api/api.ts";
-import type { Summary } from "../types/summary.ts";
-import type { Document } from '../types/document.ts';
+import type {RegisterRequest} from "../types/register-request.ts";
+import type {LoginRequest} from "../types/login-request.ts";
 
-export const useDocuments = () => {
-  return useQuery({
-    queryKey: ['documents'],
-    queryFn: getDocumentsList,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 15 * 60 * 1000,
-    refetchOnWindowFocus: false,
+export const useRegister = () => {
+  return useMutation({
+    mutationFn: (data: RegisterRequest) => register(data),
   });
 };
 
-export const useDocumentSummary = (documentId?: string) => {
-  return useQuery({
-    queryKey: ['document-summary', documentId],
-    queryFn: () => getDocumentSummary(documentId!),
-    enabled: !!documentId,
-    retry: false,
-    staleTime: 10 * 60 * 1000,
+export const useLogin = () => {
+  return useMutation({
+    mutationFn: (data: LoginRequest) => login(data),
   });
 };
 
-export const useDocument = (documentId?: string) => {
-  const summaryQuery = useDocumentSummary(documentId);
-
-  const isReady = !!summaryQuery.data;
-
-  return {
-    summary: summaryQuery.data as Summary | undefined,
-    isReady,
-    isLoading: summaryQuery.isLoading,
-    isFetching: summaryQuery.isFetching,
-    isError: summaryQuery.isError,
-    error: summaryQuery.error,
-  };
+export const useExtractText = () => {
+  return useMutation({
+    mutationFn: (file: File) => extractText(file),
+  });
 };
 
-export const useDocumentFromList = (documentId?: string) => {
-  const { data } = useDocuments();
-
-  const document = data?.find((doc: Document) => doc.id === documentId);
-
-  return {
-    document,
-    isLoading: !data,
-  };
+export const useSummarize = () => {
+  return useMutation({
+    mutationFn: (file: File) => summarize(file),
+  });
 };
 
+// hooks/queries.ts
 export const useUploadDocument = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: saveDocument,
+    mutationFn: (file: File) => uploadDocument(file),
     onSuccess: () => {
-      // После успешной загрузки обновляем список документов
-      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      queryClient.invalidateQueries({
+        queryKey: ['documents'],
+        exact: true
+      });
+
+      setTimeout(() => {
+        queryClient.refetchQueries({
+          queryKey: ['documents'],
+          exact: true
+        });
+      }, 300);
     },
+  });
+};
+
+export const useDocumentsList = () => {
+  return useQuery({
+    queryKey: ['documents'],
+    queryFn: getDocumentsList,
+    staleTime: 0,
+    gcTime: 10 * 60 * 1000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+};
+
+export const useDocumentById = (documentId: string) => {
+  const { data: documents, isLoading, error } = useDocumentsList();
+
+  const document = documents?.items.find((doc) => doc.id === documentId);
+
+  return {
+    document,
+    isLoading,
+    error,
+  };
+};
+
+export const useDocumentSummary = (documentId: string) => {
+  return useQuery({
+    queryKey: ['document', documentId, 'summary'],
+    queryFn: () => getDocumentSummary(documentId),
+    enabled: !!documentId,
   });
 };
 
 export const useDeleteDocument = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: deleteDocument,
-    onSuccess: (_, documentId) => {
+    mutationFn: (documentId: string) => deleteDocument(documentId),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
-      queryClient.removeQueries({ queryKey: ['document-summary', documentId] });
     },
   });
 };

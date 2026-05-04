@@ -6,9 +6,11 @@ import {DragAndDrop} from "../../components/drag-and-drop/drag-and-drop.tsx";
 import {FileView} from "../../components/file-view/file-view.tsx";
 import styles from './upload-page.module.css';
 import {PopUp} from "../../components/pop-up/pop-up.tsx";
+import {useAuth} from "../../context/auth-context.tsx";
 
 export function UploadPage(): React.JSX.Element {
   const [file, setFile] = useState<File | null>(null);
+  const { isAuth } = useAuth();
 
   const handleFileSelect = (selectedFile: File) => {
     setFile(selectedFile);
@@ -24,7 +26,7 @@ export function UploadPage(): React.JSX.Element {
         <title>ShortDoc</title>
       </Helmet>
       <Header />
-      <PopUp />
+      {!isAuth && <PopUp />}
       <div className={styles.container}>
         <section className={styles.text}>
           <h1 className={styles.title}><span className={styles.blue}>Упростить </span>документ <br/>в один клик</h1>

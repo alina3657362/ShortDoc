@@ -2,24 +2,31 @@ import React, { useState } from "react";
 import { Logo } from "../../components/logo/logo.tsx";
 import { Helmet } from "react-helmet-async";
 import styles from './login-page.module.css';
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { AppRoute } from "../../const.ts";
+import {useAuth} from "../../context/auth-context.tsx";
 
 export function LoginPage(): React.JSX.Element {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const clearEmail = () => setEmail('');
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   const isFormValid = email.trim() !== '' && password.trim() !== '';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isFormValid) {
-      // Логика входа
-      alert('Форма отправлена!');
+      try {
+        await login({ email, password });
+        navigate(AppRoute.Upload);
+      } catch (err) {
+        console.error('Ошибка входа:', err);
+      }
     }
   };
 

@@ -1,10 +1,13 @@
-import type {Summary} from "./summary.ts";
 import type {User} from "./user.ts";
 import type {Document} from "./document.ts";
 
-export interface AuthResponse {
+export interface LoginResponse {
   access_token: string;
   token_type: string;
+  user: User;
+}
+
+export interface RegisterResponse {
   user: User;
 }
 
@@ -18,5 +21,8 @@ export interface SummarizeResponse {
   summary: string;
 }
 
-export type DocumentsListResponse = Document[];
-export type SaveDocumentResponse = Summary;
+export interface DocumentsListResponse {
+  items: Document[];
+}
+
+

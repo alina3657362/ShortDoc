@@ -4,29 +4,40 @@ import {Header} from "../../components/header/header.tsx";
 import styles from './account-page.module.css';
 import {Link} from "react-router-dom";
 import {AppRoute} from "../../const.ts";
-import {mockDocuments} from "../../mocks/documents.ts";
-import {mockUser} from "../../mocks/user.ts";
 import {HistoryTable} from "../../components/history-table/history-table.tsx";
+import {useAuth} from "../../context/auth-context.tsx";
+import {useDocumentsList} from "../../hooks/queries.ts";
 
 export function AccountPage() : React.JSX.Element {
-  const docs = mockDocuments;
-  const user = mockUser;
+  const { user } = useAuth();
 
+  const docs = useDocumentsList();
+
+  React.useEffect(() => {
+    const refetchDocuments = () => {
+      docs.refetch();
+    };
+
+    refetchDocuments();
+
+  }, [docs]);
+
+  console.log('Documents count:', docs.data?.items?.length);
   return (
     <div>
       <Helmet>
-        <title>ShortDoc: {user.nickname}</title>
+        <title>ShortDoc: {user?.nickname || "Ошибка отображения ника"}</title>
       </Helmet>
       <Header />
       <div className={styles.container}>
         <div className={styles.user}>
           <img src="/img/auth.svg" alt="user icon" width="106" height="106"/>
           <div className={styles.wrapper}>
-            <h1 className={styles.nickname}>@{user.nickname}</h1>
+            <h1 className={styles.nickname}>@{user?.nickname}</h1>
             <Link to={AppRoute.EditAccount} className={styles.edit}>Редактировать</Link>
           </div>
         </div>
-        <HistoryTable docs={docs} />
+        <HistoryTable docs={docs.data?.items} />
       </div>
     </div>
   )

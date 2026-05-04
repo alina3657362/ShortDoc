@@ -1,18 +1,27 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { getToken } from '../../api/token';
+import {useAuth} from "../../context/auth-context.tsx";
+import {AppRoute} from "../../const.ts";
 
 export function PrivateRoute() {
-  const token = getToken();
+  const { isAuth, isLoading } = useAuth();
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
+  if (isLoading) return null;
+
+  if (!isAuth) {
+    return <Navigate to={AppRoute.Login} />;
   }
 
   return <Outlet />;
 }
 
 export function GuestRoute() {
-  const token = getToken();
+  const { isAuth, isLoading } = useAuth();
 
-  return token ? <Navigate to="/" replace /> : <Outlet />;
+  if (isLoading) return null;
+
+  if (isAuth) {
+    return <Navigate to={AppRoute.Upload} />;
+  }
+
+  return <Outlet />;
 }

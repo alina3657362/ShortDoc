@@ -1,5 +1,5 @@
 .history {
-  padding: 56px 66px 0 66px;
+  padding: 56px 0 0 0;
   font-family: Montserrat, sans-serif;
 }
 
@@ -166,3 +166,52 @@
   color: #a2a2a2;
 }
 
+.confirm {
+  display: flex;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  border: solid 1px #EB5757;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: Montserrat, sans-serif;
+  width: 220px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  gap: 8px;
+  position: absolute;
+  right: 72px;
+  background-color: white;
+  z-index: 1;
+  transform: translateY(8px);
+}
+
+.confirm_text {
+  flex-grow: 1;
+  margin: 0;
+}
+
+.yes {
+  outline: none;
+  border: 2px solid #6C9EFF;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 11px 15px;
+  box-sizing: border-box;
+  background-color: transparent;
+  color: #6C9EFF;
+  font-weight: 500;
+}
+
+.no {
+  outline: none;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 11px 15px;
+  box-sizing: border-box;
+  background-color: #6C9EFF;
+  color: white;
+  font-weight: 500;
+}
