@@ -1,11 +1,11 @@
 import styles from './edit-account-page.module.css';
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { mockUser } from "../../mocks/user.ts";
 import { Header } from "../../components/header/header.tsx";
+import {useAuth} from "../../context/auth-context.tsx";
 
 export function EditAccountPage(): React.JSX.Element {
-  const user = mockUser;
+  const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -19,7 +19,7 @@ export function EditAccountPage(): React.JSX.Element {
   return (
     <div>
       <Helmet>
-        <title>ShortDoc: {user.nickname}</title>
+        <title>ShortDoc: {user?.nickname}</title>
       </Helmet>
       <Header />
       <div className={styles.wrapper}>
@@ -33,7 +33,7 @@ export function EditAccountPage(): React.JSX.Element {
                 type='text'
                 className={styles.input}
                 id='nickname'
-                defaultValue={user.nickname}
+                defaultValue={user?.nickname}
               />
             </div>
 
@@ -43,7 +43,7 @@ export function EditAccountPage(): React.JSX.Element {
                 type='email'
                 className={`${styles.input} ${!isEmailValid ? styles.error : ''}`}
                 id='email'
-                defaultValue={user.email}
+                defaultValue={user?.email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>

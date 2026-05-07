@@ -61,8 +61,8 @@ export function HistoryTable ({docs} : HistoryTableProps): React.JSX.Element {
     <div className={styles.page}>
       <div className={styles.history}>
         <div className={styles.label}>
-          <p className={styles.filename}>Название</p>
-          <p className={styles.date}>Дата</p>
+          <p className={styles.filename}>название</p>
+          <p className={styles.date}>дата</p>
           <button className={styles.delete}
                   onClick={handleDeleteClick}
                   disabled={!hasAnySelected || deleteMutation.isPending}

@@ -11,7 +11,7 @@ export function Header(): React.JSX.Element {
 
   const handleLogout = () => {
     logout();
-    navigate(AppRoute.Login);
+    navigate(AppRoute.Upload);
   };
 
   const handleAccountClick = () => {

@@ -1,11 +1,11 @@
 export enum AppRoute {
     Upload = '/',
-    Document = '/documents/:id',
+    Document = '/documents/:documentId',
     Summary = '/summary',
-    Account = 'account/:id',
-    EditAccount = 'account/:id/edit',
+    Account = '/account/:id',
+    EditAccount = '/account/:id/edit',
     Login = '/login',
-    UserDocument = 'account/:id/documents/:id',
+    UserDocument = '/account/:id/documents/:documentId',
     Register = '/register',
 }
 

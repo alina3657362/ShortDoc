@@ -22,7 +22,6 @@ export function AccountPage() : React.JSX.Element {
 
   }, [docs]);
 
-  console.log('Documents count:', docs.data?.items?.length);
   return (
     <div>
       <Helmet>
@@ -34,7 +33,7 @@ export function AccountPage() : React.JSX.Element {
           <img src="/img/auth.svg" alt="user icon" width="106" height="106"/>
           <div className={styles.wrapper}>
             <h1 className={styles.nickname}>@{user?.nickname}</h1>
-            <Link to={AppRoute.EditAccount} className={styles.edit}>Редактировать</Link>
+            <Link to={AppRoute.EditAccount} className={styles.edit}>редактировать</Link>
           </div>
         </div>
         <HistoryTable docs={docs.data?.items} />

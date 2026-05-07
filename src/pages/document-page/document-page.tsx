@@ -25,7 +25,11 @@ export function DocumentPage() : React.JSX.Element {
   return (
     <div className={styles.page}>
       <Helmet>
-        <title>ShortDoc: {filename}</title>
+        <title>
+          {filename
+            ? `ShortDoc: ${filename}`
+            : "ShortDoc: Просмотр документа"}
+        </title>
       </Helmet>
       <Header />
       <div className={styles.container}>

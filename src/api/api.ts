@@ -55,9 +55,6 @@ export const uploadDocument = async (file: File): Promise<Summary> => {
 
 export const getDocumentsList = async (): Promise<DocumentsListResponse> => {
   const { data } = await api.get<DocumentsListResponse>('/documents');
-  console.log('=== GET DOCUMENTS RESPONSE ===', data);
-  console.log('Token used (from localStorage or wherever you store it):',
-    localStorage.getItem('short-doc-token') || 'no token'); // подставь свой способ хранения токена
   return data;
 };
 

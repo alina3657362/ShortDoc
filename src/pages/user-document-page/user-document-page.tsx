@@ -1,27 +1,32 @@
 import React from "react";
 import {mockDocuments} from "../../mocks/documents.ts";
-import {mockSummary} from "../../mocks/summary.ts";
 import styles from './user-document-page.module.css';
 import {Helmet} from "react-helmet-async";
 import {Header} from "../../components/header/header.tsx";
 import {ReadArea} from "../../components/read-area/read-area.tsx";
-import {Link} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {AppRoute} from "../../const.ts";
-import {mockUser} from "../../mocks/user.ts";
+import {useAuth} from "../../context/auth-context.tsx";
+import {useDocumentSummary} from "../../hooks/queries.ts";
 
 export function UserDocumentPage() : React.JSX.Element {
+  const { documentId } = useParams<{ documentId: string }>();
   const doc = mockDocuments[1];
-  const sum = mockSummary;
-  const user = mockUser;
+  const { data } = useDocumentSummary(documentId || '');
+  const { user } = useAuth();
 
   return (
     <div className={styles.page}>
       <Helmet>
-        <title>ShortDoc: {doc.filename}</title>
+        <title>
+          {doc.filename
+            ? `ShortDoc: ${doc.filename}`
+            : "ShortDoc: Просмотр документа"}
+        </title>
       </Helmet>
       <Header />
       <div className={styles.title_page}>
-        <Link to={`/${user.nickname}`} className={styles.back}>
+        <Link to={`/account/${user?.nickname}`} className={styles.back}>
           <p>← в историю</p>
         </Link>
         <p className={styles.filename}>{doc.filename}</p>
@@ -38,7 +43,7 @@ export function UserDocumentPage() : React.JSX.Element {
         <div className={styles.read_area}>
           <h2 className={styles.title}>Итог:</h2>
           <div className={styles.text}>
-            <ReadArea text={sum.summary} />
+            <ReadArea text={data?.summary || "Ошибка при загрузке текста"} />
           </div>
         </div>
       </div>

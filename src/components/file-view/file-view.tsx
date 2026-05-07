@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './file-view.module.css';
 import {Link, useNavigate} from "react-router-dom";
 import {useAuth} from "../../context/auth-context.tsx";
@@ -17,6 +17,7 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
   const { isAuth } = useAuth();
 
   const [isAgreed, setIsAgreed] = useState(false);
+  const [loadingDots, setLoadingDots] = useState(1);
 
   const extractTextMutation = useExtractText();
   const uploadDocumentMutation = useUploadDocument();
@@ -29,6 +30,21 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
     uploadDocumentMutation.isPending;
 
   const isButtonDisabled = !isPdf || !isAgreed || isLoading;
+
+  useEffect(() => {
+    if (!isLoading) {
+      setLoadingDots(1);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setLoadingDots((prev) => (prev === 3 ? 1 : prev + 1));
+    }, 400);
+
+    return () => clearInterval(interval);
+  }, [isLoading]);
+
+  const loadingText = `Упрощаем${'.'.repeat(loadingDots)}`;
 
   const handleSimplify = async () => {
     if (!isPdf || !isAgreed) return;
@@ -84,7 +100,7 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
         onClick={handleSimplify}
         disabled={isButtonDisabled}
       >
-        {isLoading ? 'Упрощаем...' : 'Упростить'}
+        {isLoading ? loadingText : 'Упростить'}
       </button>
 
       <form className={styles.personal_container}>

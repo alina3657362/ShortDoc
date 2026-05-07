@@ -27,7 +27,7 @@ export function PopUp(): React.JSX.Element {
             <img src="/img/close.svg" alt="close" width="9px" height="9"/>
           </button>
         </div>
-        <Link to={AppRoute.Login} className={styles.link}>Зарегистрироваться →</Link>
+        <Link to={AppRoute.Register} className={styles.link}>Зарегистрироваться →</Link>
       </div>
     </div>
   );

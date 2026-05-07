@@ -5,6 +5,7 @@
 
 .logo {
   flex-grow: 1;
+  outline: none;
 }
 
 .icons {
