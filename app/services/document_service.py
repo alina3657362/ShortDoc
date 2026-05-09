@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from app.storage.memory import documents_store, summaries_store
+from app.storage.memory import documents_store, document_files_store, summaries_store
 
 
 class DocumentService:
@@ -35,6 +35,7 @@ class DocumentService:
             "user_id": user_id,
             "filename": filename,
             "size_bytes": size_bytes,
+            "extracted_text": extracted_text,
             "created_at": now,
             "updated_at": now,
         }
@@ -48,6 +49,7 @@ class DocumentService:
         }
 
         documents_store[document_id] = document
+        document_files_store[document_id] = content
         summaries_store[document_id] = summary_item
 
         return summary_item
@@ -83,6 +85,40 @@ class DocumentService:
 
         return summaries_store.get(document_id)
 
+    async def get_original_text(self, document_id: str, user_id: str) -> dict | None:
+        document = documents_store.get(document_id)
+
+        if document is None:
+            return None
+
+        if document.get("user_id") != user_id:
+            return None
+
+        return {
+            "document_id": document["id"],
+            "filename": document["filename"],
+            "text": document.get("extracted_text", ""),
+        }
+
+    async def get_original_pdf(self, document_id: str, user_id: str) -> dict | None:
+        document = documents_store.get(document_id)
+
+        if document is None:
+            return None
+
+        if document.get("user_id") != user_id:
+            return None
+
+        content = document_files_store.get(document_id)
+
+        if content is None:
+            return None
+
+        return {
+            "filename": document["filename"],
+            "content": content,
+        }
+
     async def document_exists(self, document_id: str, user_id: str) -> bool:
         document = documents_store.get(document_id)
 
@@ -101,6 +137,7 @@ class DocumentService:
             return False
 
         documents_store.pop(document_id, None)
+        document_files_store.pop(document_id, None)
         summaries_store.pop(document_id, None)
 
         return True

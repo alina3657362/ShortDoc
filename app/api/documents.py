@@ -208,3 +208,73 @@ async def summarize_pdf(
         "filename": file.filename,
         "summary": result["summary"],
     }
+
+
+@router.get(
+    "/{document_id}/text",
+    response_model=OriginalTextResponse,
+    responses={
+        401: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+    },
+)
+async def get_original_text(
+        document_id: str,
+        current_user: dict = Depends(require_authorization),
+):
+    original_text = await document_service.get_original_text(
+        document_id=document_id,
+        user_id=current_user["id"],
+    )
+
+    if original_text is None:
+        raise HTTPException(
+            status_code=404,
+            detail={
+                "error": {
+                    "code": "DOCUMENT_NOT_FOUND",
+                    "message": "Document not found",
+                }
+            },
+        )
+
+    return original_text
+
+
+@router.get(
+    "/{document_id}/original",
+    responses={
+        401: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+    },
+)
+async def get_original_pdf(
+        document_id: str,
+        current_user: dict = Depends(require_authorization),
+):
+    original_pdf = await document_service.get_original_pdf(
+        document_id=document_id,
+        user_id=current_user["id"],
+    )
+
+    if original_pdf is None:
+        raise HTTPException(
+            status_code=404,
+            detail={
+                "error": {
+                    "code": "DOCUMENT_NOT_FOUND",
+                    "message": "Document not found",
+                }
+            },
+        )
+
+    filename = original_pdf["filename"]
+    encoded_filename = quote(filename)
+
+    return Response(
+        content=original_pdf["content"],
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"
+        },
+    )

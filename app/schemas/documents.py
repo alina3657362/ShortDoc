@@ -62,3 +62,8 @@ class PdfTextResponse(BaseModel):
 class SummaryFromFileResponse(BaseModel):
     filename: str
     summary: str
+
+class OriginalTextResponse(BaseModel):
+    document_id: str
+    filename: str
+    text: str
