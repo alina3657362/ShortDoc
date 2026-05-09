@@ -13,7 +13,7 @@ from app.schemas.documents import (
 from app.services.document_service import document_service
 from app.services.llm_service import llm_service
 from app.services.pdf_service import pdf_service
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
 
 router = APIRouter(prefix="/api/v1/documents", tags=["Documents"])
 
