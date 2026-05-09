@@ -5,7 +5,7 @@ import {
   extractText,
   getDocumentsList,
   getDocumentSummary,
-  deleteDocument, summarize, uploadDocument,
+  deleteDocument, summarize, uploadDocument, getDocumentOriginal, getDocumentText,
 } from "../api/api.ts";
 import type {RegisterRequest} from "../types/register-request.ts";
 import type {LoginRequest} from "../types/login-request.ts";
@@ -86,6 +86,20 @@ export const useDocumentSummary = (documentId: string) => {
     enabled: !!documentId,
   });
 };
+
+export const useDocumentText = (documentId: string) => useQuery({
+  queryKey: ['document', documentId, 'text'],
+  queryFn: () => getDocumentText(documentId),
+  enabled: !!documentId,
+});
+
+export const useDocumentOriginal = (documentId: string) => useQuery({
+  queryKey: ['document', documentId, 'original'],
+  queryFn: () => getDocumentOriginal(documentId),
+  enabled: !!documentId,
+  // blob не кэшируется по умолчанию хорошо, можно отключить кэш если нужно
+  staleTime: 0,
+});
 
 export const useDeleteDocument = () => {
   const queryClient = useQueryClient();

@@ -1,11 +1,11 @@
-import React from "react";
-import { Logo } from "../logo/logo.tsx";
+import React, {memo} from "react";
+import MemoizedLogo from "../logo/logo.tsx";
 import styles from './header.module.css';
 import { useNavigate } from "react-router-dom";
 import { AppRoute } from "../../const.ts";
 import { useAuth } from "../../context/auth-context.tsx";
 
-export function Header(): React.JSX.Element {
+function Header(): React.JSX.Element {
   const { isAuth, user, logout, isLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -32,7 +32,7 @@ export function Header(): React.JSX.Element {
   return (
     <div className={styles.container}>
       <div className={styles.logo}>
-        <Logo />
+        <MemoizedLogo />
       </div>
 
       <div className={styles.icons}>
@@ -64,3 +64,7 @@ export function Header(): React.JSX.Element {
     </div>
   );
 }
+
+const MemoizedHeader = memo(Header);
+
+export default MemoizedHeader;

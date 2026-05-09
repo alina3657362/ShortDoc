@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Logo } from "../../components/logo/logo.tsx";
+import MemoizedLogo from "../../components/logo/logo.tsx";
 import { Helmet } from "react-helmet-async";
 import styles from './login-page.module.css';
 import {Link, useNavigate} from "react-router-dom";
@@ -36,7 +36,7 @@ export function LoginPage(): React.JSX.Element {
         <title>ShortDoc: Войти</title>
       </Helmet>
       <div className={styles.header}>
-        <Logo />
+        <MemoizedLogo />
       </div>
       <h1 className={styles.title}>Вход</h1>
       <p className={styles.form_text}>

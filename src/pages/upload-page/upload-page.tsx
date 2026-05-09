@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {Helmet} from 'react-helmet-async';
-import {Header} from "../../components/header/header.tsx";
+import MemoizedHeader from "../../components/header/header.tsx";
 import {Link} from "react-router-dom";
 import {DragAndDrop} from "../../components/drag-and-drop/drag-and-drop.tsx";
 import {FileView} from "../../components/file-view/file-view.tsx";
@@ -25,7 +25,7 @@ export function UploadPage(): React.JSX.Element {
       <Helmet>
         <title>ShortDoc</title>
       </Helmet>
-      <Header />
+      <MemoizedHeader />
       {!isAuth && <PopUp />}
       <div className={styles.container}>
         <section className={styles.text}>
@@ -42,7 +42,14 @@ export function UploadPage(): React.JSX.Element {
       </div>
       <footer className={styles.footer}>
         <p className={styles.footer_text}>Загружая свои документы на этот сайт вы соглашаетесь с</p>
-        <Link to="" className={styles.privacy}>Положением о конфиденциальности</Link>
+        <Link
+          to="/public/Правила использования сервиса.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.privacy}
+        >
+          правилами использования сервиса
+        </Link>
       </footer>
     </div>
 

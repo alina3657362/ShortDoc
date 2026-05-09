@@ -25,4 +25,9 @@ export interface DocumentsListResponse {
   items: Document[];
 }
 
+export interface DocumentTextResponse {
+  document_id: string;
+  filename: string;
+  text: string;
+}
 

@@ -1,35 +1,34 @@
 import React from "react";
-import {mockDocuments} from "../../mocks/documents.ts";
 import styles from './user-document-page.module.css';
 import {Helmet} from "react-helmet-async";
-import {Header} from "../../components/header/header.tsx";
+import MemoizedHeader from "../../components/header/header.tsx";
 import {ReadArea} from "../../components/read-area/read-area.tsx";
 import {Link, useParams} from "react-router-dom";
 import {AppRoute} from "../../const.ts";
 import {useAuth} from "../../context/auth-context.tsx";
-import {useDocumentSummary} from "../../hooks/queries.ts";
+import {useDocumentSummary, useDocumentText} from "../../hooks/queries.ts";
 
 export function UserDocumentPage() : React.JSX.Element {
   const { documentId } = useParams<{ documentId: string }>();
-  const doc = mockDocuments[1];
-  const { data } = useDocumentSummary(documentId || '');
+  const { data: document } = useDocumentText(documentId || "")
+  const { data: summary } = useDocumentSummary(documentId || '');
   const { user } = useAuth();
 
   return (
     <div className={styles.page}>
       <Helmet>
         <title>
-          {doc.filename
-            ? `ShortDoc: ${doc.filename}`
+          {document?.filename
+            ? `ShortDoc: ${document?.filename}`
             : "ShortDoc: Просмотр документа"}
         </title>
       </Helmet>
-      <Header />
+      <MemoizedHeader />
       <div className={styles.title_page}>
         <Link to={`/account/${user?.nickname}`} className={styles.back}>
           <p>← в историю</p>
         </Link>
-        <p className={styles.filename}>{doc.filename}</p>
+        <p className={styles.filename}>{document?.filename}</p>
         <p className={styles.spacer}></p>
       </div>
 
@@ -37,13 +36,13 @@ export function UserDocumentPage() : React.JSX.Element {
         <div className={styles.read_area}>
           <h2 className={styles.title}>Документ:</h2>
           <div className={styles.text}>
-            <ReadArea text={doc.toString()} />
+            <ReadArea text={document?.text || "Ошибка при загрузке текста"} />
           </div>
         </div>
         <div className={styles.read_area}>
           <h2 className={styles.title}>Итог:</h2>
           <div className={styles.text}>
-            <ReadArea text={data?.summary || "Ошибка при загрузке текста"} />
+            <ReadArea text={summary?.summary || "Ошибка при загрузке текста"} />
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import styles from './document-page.module.css';
 import {Helmet} from "react-helmet-async";
-import {Header} from "../../components/header/header.tsx";
+import MemoizedHeader from "../../components/header/header.tsx";
 import {ReadArea} from "../../components/read-area/read-area.tsx";
 import {Link, useLocation, useParams} from "react-router-dom";
 import {AppRoute} from "../../const.ts";
@@ -31,7 +31,7 @@ export function DocumentPage() : React.JSX.Element {
             : "ShortDoc: Просмотр документа"}
         </title>
       </Helmet>
-      <Header />
+      <MemoizedHeader />
       <div className={styles.container}>
         <div className={styles.read_area}>
           <h2 className={styles.title}>Документ:</h2>

@@ -62,8 +62,13 @@ html, body, #root {
   margin: 0;
   text-underline: none;
   color: #6C9EFF;
+  text-decoration: none;
 }
 
 .footer_text {
   margin: 0;
+}
+
+.privacy:hover {
+  text-decoration: underline;
 }

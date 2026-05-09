@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from './register-page.module.css';
 import { Helmet } from "react-helmet-async";
-import { Logo } from "../../components/logo/logo.tsx";
+import MemoizedLogo from "../../components/logo/logo.tsx";
 import { Link, useNavigate } from "react-router-dom";
 import { AppRoute } from "../../const.ts";
 import { useAuth } from "../../context/auth-context.tsx";
@@ -59,7 +59,7 @@ export function RegisterPage(): React.JSX.Element {
       </Helmet>
 
       <div className={styles.header}>
-        <Logo />
+        <MemoizedLogo />
       </div>
 
       <h1 className={styles.title}>

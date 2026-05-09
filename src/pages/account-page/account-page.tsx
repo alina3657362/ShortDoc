@@ -1,6 +1,6 @@
 import React from "react";
 import {Helmet} from "react-helmet-async";
-import {Header} from "../../components/header/header.tsx";
+import MemoizedHeader from "../../components/header/header.tsx";
 import styles from './account-page.module.css';
 import {Link} from "react-router-dom";
 import {AppRoute} from "../../const.ts";
@@ -27,7 +27,7 @@ export function AccountPage() : React.JSX.Element {
       <Helmet>
         <title>ShortDoc: {user?.nickname || "Ошибка отображения ника"}</title>
       </Helmet>
-      <Header />
+      <MemoizedHeader />
       <div className={styles.container}>
         <div className={styles.user}>
           <img src="/img/auth.svg" alt="user icon" width="106" height="106"/>

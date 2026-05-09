@@ -14,6 +14,8 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_URL || 'http://81.26.184.194:8000',
           changeOrigin: true,
           secure: false,
+          timeout: 60000,
+          proxyTimeout: 60000,
         },
       },
     },

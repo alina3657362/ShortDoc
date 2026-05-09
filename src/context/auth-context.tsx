@@ -67,7 +67,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(response.user);
 
       localStorage.setItem(USER_KEY, JSON.stringify(response.user));
-      console.log('Access token saved:', response.access_token);
     } catch (error) {
       console.error("Ошибка логина:", error);
       throw error;

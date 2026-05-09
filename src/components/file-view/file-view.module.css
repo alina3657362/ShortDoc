@@ -127,6 +127,10 @@
   text-decoration: none;
 }
 
+.personal_link:hover {
+  text-decoration: underline;
+}
+
 .spinner {
   display: inline-block;
   width: 12px;

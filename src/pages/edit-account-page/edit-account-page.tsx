@@ -1,7 +1,7 @@
 import styles from './edit-account-page.module.css';
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Header } from "../../components/header/header.tsx";
+import MemoizedHeader from "../../components/header/header.tsx";
 import {useAuth} from "../../context/auth-context.tsx";
 
 export function EditAccountPage(): React.JSX.Element {
@@ -21,7 +21,7 @@ export function EditAccountPage(): React.JSX.Element {
       <Helmet>
         <title>ShortDoc: {user?.nickname}</title>
       </Helmet>
-      <Header />
+      <MemoizedHeader />
       <div className={styles.wrapper}>
         <img src='/img/user_active.svg' alt="user icon" width='106' height='106' />
         <div className={styles.container}>

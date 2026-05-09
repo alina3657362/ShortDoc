@@ -1,7 +1,7 @@
 import { createAPI } from './index.ts';
 import type {RegisterRequest} from "../types/register-request.ts";
 import type {
-  DocumentsListResponse,
+  DocumentsListResponse, DocumentTextResponse,
   ExtractTextResponse, LoginResponse, RegisterResponse,
   SummarizeResponse,
 } from "../types/responses.ts";
@@ -61,6 +61,18 @@ export const getDocumentsList = async (): Promise<DocumentsListResponse> => {
 export const getDocumentSummary = async (documentId: string): Promise<Summary> => {
   const { data } = await api.get<Summary>(`/documents/${documentId}/summary`);
   return data;
+};
+
+export const getDocumentText = async (documentId: string): Promise<DocumentTextResponse> => {
+  const { data } = await api.get<DocumentTextResponse>(`/documents/${documentId}/text`);
+  return data;
+};
+
+export const getDocumentOriginal = async (documentId: string): Promise<Blob> => {
+  const response = await api.get(`/documents/${documentId}/original`, {
+    responseType: 'blob',
+  });
+  return response.data;
 };
 
 export const deleteDocument = async (documentId: string): Promise<void> => {
