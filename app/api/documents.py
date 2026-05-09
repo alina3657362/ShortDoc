@@ -6,6 +6,7 @@ from app.schemas.documents import (
     PdfTextResponse,
     SummaryFromFileResponse,
     SummaryResponse,
+    OriginalTextResponse
 )
 from app.services.document_service import document_service
 from app.services.llm_service import llm_service
