@@ -49,8 +49,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const parsed = JSON.parse(savedUserJson);
         setUser(parsed);
-      } catch (e) {
-        console.error('Не удалось восстановить пользователя');
+      } catch (error) {
+        console.error('Не удалось восстановить пользователя', error);
         localStorage.removeItem(USER_KEY);
       }
     }

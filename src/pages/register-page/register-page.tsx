@@ -13,6 +13,7 @@ export function RegisterPage(): React.JSX.Element {
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [isChecked, setIsChecked] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { login: loginUser } = useAuth();
   const registerMutation = useRegister();
@@ -33,22 +34,26 @@ export function RegisterPage(): React.JSX.Element {
     doPasswordsMatch &&
     isChecked;
 
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFormValid) return;
 
+    const cleanNickname = nickname.trim().replace(/^@+/, '');
+
     try {
       await registerMutation.mutateAsync({
         email,
-        nickname: nickname.trim(),
+        nickname: cleanNickname,
         password,
       });
 
       await loginUser({ email, password });
 
       navigate(AppRoute.Upload);
-    } catch (err: any) {
-      console.error('Ошибка регистрации:', err);
+    } catch (error) {
+      console.error('Ошибка регистрации:', error);
     }
   };
 
@@ -104,7 +109,7 @@ export function RegisterPage(): React.JSX.Element {
               required
               value={nickname}
               onChange={(e) => {
-                let value = e.target.value.replace(/^@+/, '').trim();
+                const value = e.target.value;
                 setNickname(value);
               }}
             />
@@ -120,7 +125,7 @@ export function RegisterPage(): React.JSX.Element {
             <input
               className={`${styles.form_input} ${passwordTouched && !isPasswordValid ? styles.error : ''}`}
               id="password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               placeholder=" "
               required
               value={password}
@@ -128,6 +133,19 @@ export function RegisterPage(): React.JSX.Element {
               onBlur={() => setPasswordTouched(true)}
             />
             <span className={styles.placeholder}>Придумайте пароль</span>
+
+            <button
+              type="button"
+              className={styles.toggle_password_button}
+              onClick={togglePasswordVisibility}
+              aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
+            >
+              {showPassword ? (
+                <img src="/img/view.png" alt="visible" width="16" height="16" />
+              ) : (
+                <img src="/img/eyebrow.png" alt="invisible" width="16" height="16" />
+              )}
+            </button>
           </div>
           {passwordTouched && !isPasswordValid && password && (
             <p className={styles.error_message}>
@@ -139,7 +157,7 @@ export function RegisterPage(): React.JSX.Element {
             <input
               className={`${styles.form_input} ${repeatPasswordTouched && !doPasswordsMatch ? styles.error : ''}`}
               id="repeat_password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               placeholder=" "
               required
               value={repeatPassword}
@@ -166,7 +184,11 @@ export function RegisterPage(): React.JSX.Element {
         <label htmlFor="personalDataCheckbox" className={styles.personal_label}>
           <span className={styles.personal_text}>
             Я прочитал(a){' '}
-            <Link to="/privacy" className={styles.personal_link}>
+            <Link to="/public/Правила использования сервиса.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.personal_link}
+            >
               соглашение
             </Link>
             {' '}и даю согласие<br />на обработку персональных данных

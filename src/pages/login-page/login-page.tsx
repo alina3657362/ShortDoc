@@ -13,7 +13,10 @@ export function LoginPage(): React.JSX.Element {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const clearEmail = () => setEmail('');
+  const clearEmail = () => {
+    setEmail('');
+    setPassword('');
+  };
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   const isFormValid = email.trim() !== '' && password.trim() !== '';
@@ -96,7 +99,10 @@ export function LoginPage(): React.JSX.Element {
               onClick={togglePasswordVisibility}
               aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
             >
-              {showPassword ? '👁️' : '🔒'}
+              {showPassword ?
+                <img src="/img/view.png" alt="visible" width="16" height="16" />
+                :
+                <img src="/img/eyebrow.png" alt="invisible" width="16" height="16" /> }
             </button>
           </div>
         </div>
@@ -110,9 +116,9 @@ export function LoginPage(): React.JSX.Element {
         </button>
       </form>
 
-      <Link to="" className={styles.forget}>
+      {/*<Link to="" className={styles.forget}>
         Забыли пароль?
-      </Link>
+      </Link>*/}
     </div>
   );
 }

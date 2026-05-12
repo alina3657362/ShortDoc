@@ -1,18 +1,16 @@
-import React, {memo} from "react";
+import React, {memo, useState} from "react";
 import MemoizedLogo from "../logo/logo.tsx";
 import styles from './header.module.css';
 import { useNavigate } from "react-router-dom";
 import { AppRoute } from "../../const.ts";
 import { useAuth } from "../../context/auth-context.tsx";
+import {ConfirmModal} from "../confirm-modal/confirm-modal.tsx";
 
 function Header(): React.JSX.Element {
   const { isAuth, user, logout, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate(AppRoute.Upload);
-  };
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleAccountClick = () => {
     if (!isAuth) {
@@ -25,6 +23,16 @@ function Header(): React.JSX.Element {
     }
 
     navigate(`/account/${user.id}`);
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleConfirmLogout = () => {
+    setShowLogoutModal(false);
+    logout();
+    navigate(AppRoute.Upload);
   };
 
   if (isLoading) return <></>;
@@ -50,7 +58,7 @@ function Header(): React.JSX.Element {
         </div>
 
         {isAuth && (
-          <button className={styles.logout} onClick={handleLogout}>
+          <button className={styles.logout} onClick={handleLogoutClick}>
             <img
               className={styles.out}
               src="/img/out.svg"
@@ -61,6 +69,12 @@ function Header(): React.JSX.Element {
           </button>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleConfirmLogout}
+      />
     </div>
   );
 }

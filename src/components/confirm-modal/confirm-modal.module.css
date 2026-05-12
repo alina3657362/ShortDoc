@@ -1,0 +1,51 @@
+.modal {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  background: white;
+  right: 32px;
+  top: 89px;
+  border: 1px solid #EB5757;
+  border-radius: 12px;
+  padding: 10px 13px;
+  box-sizing: border-box;
+  gap: 8px;
+}
+
+.text {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: Montserrat, sans-serif;
+  flex-grow: 1;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.confirm {
+  color: #6C9EFF;
+  border: 2px solid #6C9EFF;
+  border-radius: 10px;
+  background: white;
+  padding: 6px 15px;
+  font-family: Montserrat, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+
+.cancel {
+  color: white;
+  border: none;
+  border-radius: 10px;
+  background: #6C9EFF;
+  padding: 6px 15px;
+  font-family: Montserrat, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  box-sizing: border-box;
+}

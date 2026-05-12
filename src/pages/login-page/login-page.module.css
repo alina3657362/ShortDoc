@@ -128,22 +128,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 14px;
-  color: #7B7B7B;
   padding: 0;
   line-height: 1;
   z-index: 1;
-}
-
-.clear_button {
-  font-size: 12px;
-}
-
-.toggle_password_button {
-  font-size: 14px;
-}
-
-.clear_button:hover,
-.toggle_password_button:hover {
-  color: #333;
 }

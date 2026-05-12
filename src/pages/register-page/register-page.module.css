@@ -190,6 +190,10 @@ body {
   display: inline-block;
 }
 
+.personal_link:hover {
+  text-decoration: underline;
+}
+
 .personal_text {
   display: inline-block;
 }
@@ -207,4 +211,17 @@ body {
 .error {
   border: 1px solid #EB5757;
   border-radius: 10px;
+}
+
+.toggle_password_button {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  z-index: 1;
 }
