@@ -1,19 +1,28 @@
-import React, {useEffect, useState} from "react";
-import type {Document} from "../../types/document.ts";
-import styles from "./history-table.module.css"
-import {Link} from "react-router-dom";
-import {useAuth} from "../../context/auth-context.tsx";
-import {useDeleteDocument} from "../../hooks/queries.ts";
+import React, { useEffect, useState } from "react";
+import type { Document } from "../../types/document.ts";
+import styles from "./history-table.module.css";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/auth-context.tsx";
+import { useDeleteDocument } from "../../hooks/queries.ts";
 
 interface HistoryTableProps {
-  docs: Document[] | undefined
+  docs: Document[] | undefined;
+  isLoading?: boolean;
+  error?: unknown;
+  onRefresh?: () => void;
 }
 
-export function HistoryTable ({docs} : HistoryTableProps): React.JSX.Element {
+export function HistoryTable({
+                               docs,
+                               isLoading = false,
+                               error,
+                               onRefresh
+                             }: HistoryTableProps): React.JSX.Element {
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
-  const { user } = useAuth();
 
+  const { user } = useAuth();
   const deleteMutation = useDeleteDocument();
 
   const hasAnySelected = selectedIds.length > 0;
@@ -33,18 +42,14 @@ export function HistoryTable ({docs} : HistoryTableProps): React.JSX.Element {
   };
 
   const handleDeleteClick = () => {
-    if (hasAnySelected) {
-      setShowConfirm(true);
-    }
+    if (hasAnySelected) setShowConfirm(true);
   };
 
   const handleConfirmDelete = async () => {
     if (selectedIds.length === 0) return;
 
     try {
-      await Promise.all(
-        selectedIds.map((id) => deleteMutation.mutateAsync(id))
-      );
+      await Promise.all(selectedIds.map((id) => deleteMutation.mutateAsync(id)));
       setSelectedIds([]);
     } catch (error) {
       console.error("Ошибка при удалении документов:", error);
@@ -53,9 +58,50 @@ export function HistoryTable ({docs} : HistoryTableProps): React.JSX.Element {
     }
   };
 
-  const handleCancelDelete = () => {
-    setShowConfirm(false);
-  };
+  const handleCancelDelete = () => setShowConfirm(false);
+
+  if (isLoading) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.history}>
+          <div className={styles.label}>
+            <p className={styles.filename}>название</p>
+            <p className={styles.date}>дата</p>
+            <div className={styles.delete} />
+          </div>
+
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner}></div>
+            <p>Загрузка документов...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.history}>
+          <div className={styles.label}>
+            <p className={styles.filename}>название</p>
+            <p className={styles.date}>дата</p>
+            <div className={styles.delete} />
+          </div>
+
+          <div className={styles.errorContainer}>
+            <p>Не удалось загрузить историю документов</p>
+            <button
+              className={styles.refreshButton}
+              onClick={onRefresh}
+            >
+              Обновить
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
@@ -63,12 +109,16 @@ export function HistoryTable ({docs} : HistoryTableProps): React.JSX.Element {
         <div className={styles.label}>
           <p className={styles.filename}>название</p>
           <p className={styles.date}>дата</p>
-          <button className={styles.delete}
-                  onClick={handleDeleteClick}
-                  disabled={!hasAnySelected || deleteMutation.isPending}
+          <button
+            className={styles.delete}
+            onClick={handleDeleteClick}
+            disabled={!hasAnySelected || deleteMutation.isPending}
           >
             <img
-              src={hasAnySelected && !deleteMutation.isPending ? "/img/delete_red.svg" : "/img/delete_gray.svg"}
+              src={hasAnySelected && !deleteMutation.isPending
+                ? "/img/delete_red.svg"
+                : "/img/delete_gray.svg"
+              }
               alt="delete"
               width="11"
               height="11"
@@ -79,7 +129,7 @@ export function HistoryTable ({docs} : HistoryTableProps): React.JSX.Element {
         {showConfirm && (
           <div className={styles.confirm}>
             <p className={styles.confirm_text}>
-              Вы точно хотите удалить?
+              Вы точно хотите удалить выбранные документы?
             </p>
             <button className={styles.yes} onClick={handleConfirmDelete}>
               да
@@ -90,13 +140,15 @@ export function HistoryTable ({docs} : HistoryTableProps): React.JSX.Element {
           </div>
         )}
 
-        {docs?.length === 0 ? (
+        {!docs || docs.length === 0 ? (
           <div className={styles.string}>
-            <p className={`${styles.doc_name} ${styles.empty}`}>здесь будет история твоих документов :)</p>
+            <p className={`${styles.doc_name} ${styles.empty}`}>
+              здесь будет история твоих документов :)
+            </p>
             <p className={`${styles.doc_date} ${styles.empty}`}>00.00.0000</p>
           </div>
         ) : (
-          docs?.map((doc) => (
+          docs.map((doc) => (
             <div
               key={doc.id}
               className={`${styles.string} ${selectedIds.includes(doc.id) ? styles.selected : ''}`}
@@ -111,7 +163,10 @@ export function HistoryTable ({docs} : HistoryTableProps): React.JSX.Element {
                 <div className={styles.custom}></div>
               </label>
 
-              <Link to={`/account/${user?.id}/documents/${doc.id}`} className={styles.doc_data}>
+              <Link
+                to={`/account/${user?.id}/documents/${doc.id}`}
+                className={styles.doc_data}
+              >
                 <p className={styles.doc_name}>{doc.filename}</p>
                 <p className={styles.doc_date}>
                   {new Date(doc.created_at).toLocaleDateString("ru-RU", {

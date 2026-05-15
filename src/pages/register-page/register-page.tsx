@@ -24,7 +24,7 @@ export function RegisterPage(): React.JSX.Element {
   const [repeatPasswordTouched, setRepeatPasswordTouched] = useState(false);
 
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password);
+  const isPasswordValid = /^(?=.*[A-Za-zА-Яа-яЁё])(?=.*\d).{8,}$/.test(password);
   const doPasswordsMatch = password === repeatPassword && repeatPassword !== '';
 
   const isFormValid =
@@ -149,7 +149,7 @@ export function RegisterPage(): React.JSX.Element {
           </div>
           {passwordTouched && !isPasswordValid && password && (
             <p className={styles.error_message}>
-              Пароль должен содержать минимум 6 символов, хотя бы одну букву и одну цифру
+              Пароль должен содержать минимум 8 символов, хотя бы одну букву и одну цифру
             </p>
           )}
 

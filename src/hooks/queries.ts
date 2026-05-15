@@ -5,10 +5,11 @@ import {
   extractText,
   getDocumentsList,
   getDocumentSummary,
-  deleteDocument, summarize, uploadDocument, getDocumentOriginal, getDocumentText,
+  deleteDocument, summarize, uploadDocument, getDocumentOriginal, getDocumentText, updateMe, getMe,
 } from "../api/api.ts";
 import type {RegisterRequest} from "../types/register-request.ts";
 import type {LoginRequest} from "../types/login-request.ts";
+import type {UpdateMeRequest} from "../types/update-me-request.ts";
 
 export const useRegister = () => {
   return useMutation({
@@ -19,6 +20,28 @@ export const useRegister = () => {
 export const useLogin = () => {
   return useMutation({
     mutationFn: (data: LoginRequest) => login(data),
+  });
+};
+
+export const useMe = () => {
+  return useQuery({
+    queryKey: ['me'],
+    queryFn: getMe,
+    retry: false,
+  });
+};
+
+export const useUpdateMe = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: UpdateMeRequest) => updateMe(payload),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['me'],
+      });
+    },
   });
 };
 
@@ -34,7 +57,6 @@ export const useSummarize = () => {
   });
 };
 
-// hooks/queries.ts
 export const useUploadDocument = () => {
   const queryClient = useQueryClient();
 
@@ -97,7 +119,6 @@ export const useDocumentOriginal = (documentId: string) => useQuery({
   queryKey: ['document', documentId, 'original'],
   queryFn: () => getDocumentOriginal(documentId),
   enabled: !!documentId,
-  // blob не кэшируется по умолчанию хорошо, можно отключить кэш если нужно
   staleTime: 0,
 });
 

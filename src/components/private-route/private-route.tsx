@@ -8,7 +8,7 @@ export function PrivateRoute() {
   if (isLoading) return null;
 
   if (!isAuth) {
-    return <Navigate to={AppRoute.Login} />;
+    return <Navigate to={AppRoute.Upload} />;
   }
 
   return <Outlet />;

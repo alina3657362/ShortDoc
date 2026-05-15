@@ -199,7 +199,7 @@ body {
 }
 
 .button:disabled {
-  background: rgba(108, 158, 255, 0.7);
+  background: #6C9EFFB2;
 }
 
 .error_message {

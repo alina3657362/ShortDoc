@@ -7,6 +7,8 @@ import type {
 } from "../types/responses.ts";
 import type {LoginRequest} from "../types/login-request.ts";
 import type {Summary} from "../types/summary.ts";
+import type {User} from "../types/user.ts";
+import type {UpdateMeRequest} from "../types/update-me-request.ts";
 
 export const api = createAPI();
 
@@ -18,6 +20,18 @@ export const register = async (data: RegisterRequest): Promise<RegisterResponse>
 export const login = async (data: LoginRequest): Promise<LoginResponse> => {
   const { data: response } = await api.post<LoginResponse>('/auth/login', data);
   return response;
+};
+
+export const getMe = async (): Promise<User> => {
+  const { data } = await api.get<{ user: User }>('/auth/me');
+  return data.user;
+};
+
+export const updateMe = async (
+  payload: UpdateMeRequest,
+): Promise<User> => {
+  const { data } = await api.patch<User>('/auth/me', payload);
+  return data;
 };
 
 export const extractText = async (file: File): Promise<ExtractTextResponse> => {
