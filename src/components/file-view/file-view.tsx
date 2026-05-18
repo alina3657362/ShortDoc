@@ -29,7 +29,7 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
     summarizeMutation.isPending ||
     uploadDocumentMutation.isPending;
 
-  const isButtonDisabled = !isPdf || !isAgreed || isLoading;
+  const isButtonDisabled = isAuth ? !isPdf || isLoading : !isPdf || !isAgreed || isLoading;
 
   useEffect(() => {
     if (!isLoading) {
@@ -103,22 +103,29 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
         {isLoading ? loadingText : 'Упростить'}
       </button>
 
-      <form className={styles.personal_container}>
-        <input
-          type="checkbox"
-          id="personalDataCheckbox"
-          className={styles.personal_input}
-          checked={isAgreed}
-          onChange={(e) => setIsAgreed(e.target.checked)}
-          required
-        />
-        <label htmlFor="personalDataCheckbox" className={styles.personal_label}>
-          Нажимая кнопку «Упростить», я даю своё согласие на
-          <Link to="" className={styles.personal_link}>
-            обработку персональных данных
-          </Link>
-        </label>
-      </form>
+      { isAuth ? (
+        <div></div>
+      ) : (
+        <form className={styles.personal_container}>
+          <input
+            type="checkbox"
+            id="personalDataCheckbox"
+            className={styles.personal_input}
+            checked={isAgreed}
+            onChange={(e) => setIsAgreed(e.target.checked)}
+            required
+          />
+          <label htmlFor="personalDataCheckbox" className={styles.personal_label}>
+            Нажимая кнопку «Упростить», я даю своё согласие на
+            <Link to="/public/Правила использования сервиса.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.personal_link}>
+              обработку персональных данных
+            </Link>
+          </label>
+        </form>
+      )}
 
       {/* Ошибки */}
       {/*(uploadMutation.isError ||
