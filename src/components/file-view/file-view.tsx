@@ -47,7 +47,7 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
   const loadingText = `Упрощаем${'.'.repeat(loadingDots)}`;
 
   const handleSimplify = async () => {
-    if (!isPdf || !isAgreed) return;
+    if (!isPdf || isButtonDisabled) return;
 
     try {
       const extractResult = await extractTextMutation.mutateAsync(file);
