@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
 
-  const refreshMe = async () => {
+  const refreshUser = async () => {
     try {
       const me = await getMe();
       setUser(me);
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (savedToken) {
           setToken(savedToken);
-          await refreshMe();
+          await refreshUser();
         }
       } finally {
         setIsLoading(false);
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const updateUser = async (data: Partial<User>) => {
     try {
       await updateMeApi(data);
-      await refreshMe(); // ← ключевой фикс (убирает залипания)
+      await refreshUser();
     } catch (error) {
       console.error('Ошибка обновления пользователя', error);
       throw error;
@@ -117,7 +117,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     login,
     register,
     logout,
-    refreshMe,
+    refreshMe: refreshUser,
     updateUser,
   };
 
