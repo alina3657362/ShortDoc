@@ -9,9 +9,10 @@ import type {DocumentPageState} from "../../types/document-page-state.ts";
 interface FileViewProps {
   file: File;
   onRemove: () => void;
+  onError: (error: Error) => void;
 }
 
-export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
+export function FileView({ file, onRemove, onError }: FileViewProps): React.JSX.Element {
   const navigate = useNavigate();
 
   const { isAuth } = useAuth();
@@ -71,9 +72,13 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
           documentId,
         } as DocumentPageState,
       });
-
     } catch (error) {
-      console.error('Ошибка при обработке документа:', error);
+      const err =
+        error instanceof Error
+          ? error
+          : new Error('Ошибка при обработке документа');
+
+      onError(err);
     }
   };
 
@@ -126,14 +131,6 @@ export function FileView({ file, onRemove }: FileViewProps): React.JSX.Element {
           </label>
         </form>
       )}
-
-      {/* Ошибки */}
-      {/*(uploadMutation.isError ||
-        (uploadMutation.data?.job?.error)) && (
-        <div className={styles.error_message}>
-          Ошибка при обработке документа. Попробуйте ещё раз.
-        </div>
-      )*/}
     </div>
   );
 }

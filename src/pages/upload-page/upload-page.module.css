@@ -72,3 +72,61 @@ html, body, #root {
 .privacy:hover {
   text-decoration: underline;
 }
+
+.modal_overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.modal {
+  width: 420px;
+  max-width: 90%;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 32px 36px;
+  transform: translateY(0);
+  font-family: Montserrat, sans-serif;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal_title {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #EB5757;
+}
+
+.modal_text {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 36px;
+  word-break: break-word;
+  text-align: center;
+}
+
+.modal_button {
+  width: 100%;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  background: #6C9EFF;
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal_button:hover {
+  background: #2563eb;
+}

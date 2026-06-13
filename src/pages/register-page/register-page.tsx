@@ -89,7 +89,7 @@ export function RegisterPage(): React.JSX.Element {
               onChange={(e) => setEmail(e.target.value)}
               onBlur={() => setEmailTouched(true)}
             />
-            <span className={styles.placeholder}>mail@example.com</span>
+            <span className={styles.placeholder}>Введите почту</span>
           </div>
           {emailTouched && !isEmailValid && email && (
             <p className={styles.error_message}>Некорректный формат email</p>

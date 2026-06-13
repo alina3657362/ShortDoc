@@ -10,6 +10,7 @@ import {useAuth} from "../../context/auth-context.tsx";
 
 export function UploadPage(): React.JSX.Element {
   const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { isAuth } = useAuth();
 
   const handleFileSelect = (selectedFile: File) => {
@@ -36,7 +37,11 @@ export function UploadPage(): React.JSX.Element {
           {!file ? (
             <DragAndDrop onFileSelect={handleFileSelect} />
           ) : (
-            <FileView file={file} onRemove={handleRemoveFile} />
+            <FileView
+              file={file}
+              onRemove={handleRemoveFile}
+              onError={(err) => setError(err.message)}
+            />
           )}
         </section>
       </div>
@@ -51,6 +56,19 @@ export function UploadPage(): React.JSX.Element {
           правилами использования сервиса
         </Link>
       </footer>
+
+      {error && (
+        <div className={styles.modal_overlay} onClick={() => setError(null)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modal_title}>Ошибка при обработке файла</div>
+            <div className={styles.modal_text}>Проверьте, что в вашем файле есть текст.<br/>Мы не работаем с pdf-файлами,<br/>которые состоят из сканов</div>
+            <button className={styles.modal_button} onClick={() => setError(null)}>
+              Понятно
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
 
 
