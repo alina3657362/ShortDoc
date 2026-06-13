@@ -143,6 +143,65 @@ class AuthService:
 
         return self.to_user_dto(user)
 
+    async def update_user(
+            self,
+            user_id: str,
+            nickname: str | None = None,
+            current_password: str | None = None,
+            new_password: str | None = None,
+    ) -> dict | None:
+        password_hash = None
+
+        with get_db_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT id, email, nickname, password_hash, created_at
+                    FROM users
+                    WHERE id = %s
+                    FOR UPDATE
+                    """,
+                    (user_id,),
+                )
+
+                existing_user = cursor.fetchone()
+
+                if existing_user is None:
+                    return None
+
+                if new_password is not None:
+                    if current_password is None:
+                        return None
+
+                    if not verify_password(current_password, existing_user["password_hash"]):
+                        return None
+
+                    password_hash = hash_password(new_password)
+
+                cursor.execute(
+                    """
+                    UPDATE users
+                    SET
+                        nickname = COALESCE(%s, nickname),
+                        password_hash = COALESCE(%s, password_hash)
+                    WHERE id = %s
+                    RETURNING id, email, nickname, created_at
+                    """,
+                    (
+                        nickname,
+                        password_hash,
+                        user_id,
+                    ),
+                )
+
+                user = cursor.fetchone()
+                connection.commit()
+
+        if user is None:
+            return None
+
+        return self.to_user_dto(user)
+
     @staticmethod
     def to_user_dto(user: dict) -> dict:
         return {

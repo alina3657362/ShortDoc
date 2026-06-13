@@ -1,10 +1,13 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.core.deps import require_authorization
 from app.schemas.auth import (
     LoginRequest,
     LoginResponse,
     RegisterRequest,
     RegisterResponse,
+    UpdateUserRequest,
+    UserResponse,
 )
 from app.schemas.common import ErrorResponse
 from app.services.auth_service import auth_service
@@ -62,3 +65,73 @@ async def login(payload: LoginRequest):
         )
 
     return result
+
+
+@router.get(
+    "/me",
+    response_model=UserResponse,
+    responses={401: {"model": ErrorResponse}},
+)
+async def get_current_user(
+        current_user: dict = Depends(require_authorization),
+):
+    return {"user": current_user}
+
+
+@router.patch(
+    "/me",
+    response_model=UserResponse,
+    responses={
+        400: {"model": ErrorResponse},
+        401: {"model": ErrorResponse},
+    },
+)
+async def update_current_user(
+        payload: UpdateUserRequest,
+        current_user: dict = Depends(require_authorization),
+):
+    if (
+            payload.nickname is None
+            and payload.current_password is None
+            and payload.new_password is None
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": {
+                    "code": "EMPTY_UPDATE",
+                    "message": "At least one field must be provided",
+                }
+            },
+        )
+
+    if (payload.current_password is None) != (payload.new_password is None):
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": {
+                    "code": "PASSWORD_FIELDS_REQUIRED",
+                    "message": "Both current_password and new_password must be provided",
+                }
+            },
+        )
+
+    user = await auth_service.update_user(
+        user_id=current_user["id"],
+        nickname=payload.nickname,
+        current_password=payload.current_password,
+        new_password=payload.new_password,
+    )
+
+    if user is None:
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "error": {
+                    "code": "INVALID_CURRENT_PASSWORD",
+                    "message": "Current password is invalid",
+                }
+            },
+        )
+
+    return {"user": user}
